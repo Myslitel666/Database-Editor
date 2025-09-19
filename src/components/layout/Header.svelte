@@ -30,7 +30,7 @@
         transitionSeconds="0.25"
       />
       <p class="logo-p">
-        <span style:color={primary}> SQL Viewer </span>
+        <span style:color={primary}>Database Editor</span>
       </p>
     </button>
   </a>
@@ -49,9 +49,5 @@
   .logo-p {
     margin-left: 0.25rem;
     font-size: 26px;
-  }
-
-  .logo:hover {
-    transform: scale(1.2);
   }
 </style>

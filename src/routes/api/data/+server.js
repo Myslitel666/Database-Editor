@@ -1,11 +1,12 @@
 // src/routes/api/data/+server.js
 import pkg from 'pg';
 const { Pool } = pkg;
+import { env } from '$env/dynamic/private';
 
 export async function GET() {
-    // Настраиваем пул соединений, используя DATABASE_URL
+    // Настраиваем пул соединений, используя ENGLISH_ASSISTANT
     const pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
+        connectionString: process.env.ENGLISH_ASSISTANT,
         ssl: false
         // ssl: {
         //     rejectUnauthorized: false, // Включите это для Vercel, если требуется
