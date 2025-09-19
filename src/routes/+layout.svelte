@@ -4,8 +4,8 @@
   import Header from "../components/layout/Header.svelte";
 </script>
 
-<Header height="3.5rem" />
 <ThemeProvider>
+  <Header height="3.5rem" />
   <ScrollbarContainer>
     <div class="app">
       <main>
