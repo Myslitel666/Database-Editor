@@ -4,6 +4,12 @@
   import * as fetch from "./fetch";
 
   let subject = "";
+  let specialWord = {
+    value: "",
+    translate: "",
+    example_of_use: "",
+    subjectTitle: "React",
+  };
   let wordAction = "Create";
   let subjectAction = "Create";
 
@@ -29,25 +35,33 @@
       <AutoComplete
         isSelect
         options={subjects}
-        value="React"
+        bind:value={specialWord.subjectTitle}
         label="Subject"
         width="182px"
       />
     </div>
     {#if wordAction === "Update"}
-      <AutoComplete isSelect label="Editing Value" width="370px" />
+      <AutoComplete label="Editing Value" width="370px" />
     {/if}
-    <TextField label="Value" width="370px" />
+    <TextField bind:value={specialWord.value} label="Value" width="370px" />
     {#if wordAction !== "Delete"}
-      <TextField label="Translate" width="370px" />
+      <TextField
+        bind:value={specialWord.translate}
+        label="Translate"
+        width="370px"
+      />
       <p>Example of Use:</p>
-      <TextArea width="370px" label="Example of Use" />
+      <TextArea
+        bind:value={specialWord.example_of_use}
+        width="370px"
+        label="Example of Use"
+      />
     {/if}
     {#if wordAction === "Create"}
       <Button
         width="370px"
         onClick={() => {
-          //fetch.createSubject(subject);
+          fetch.createSpecialWord(specialWord);
         }}
       >
         ADD SPECIAL WORD
