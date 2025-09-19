@@ -1,7 +1,7 @@
-import pool from "../../pool";
+import englishAssistantPool from "../../pool";
 
 export async function GET() {
-    const result = await pool.query(`
+    const result = await englishAssistantPool.query(`
         SELECT table_name 
         FROM information_schema.tables 
         WHERE table_schema = 'public';
