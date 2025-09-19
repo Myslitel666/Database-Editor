@@ -1,22 +1,16 @@
 <script>
   import { TextField, Button } from "svelte-elegant";
+  import { onMount } from "svelte";
+  import * as fetch from "./fetch";
 
   let subject = "";
 
-  async function createSubject(sub) {
-    const response = await fetch("/api/english-assistant/subjects", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: sub,
-      }),
-    });
+  let subjects;
 
-    const data = await response.json();
-    console.log("Ответ от сервера:", data);
-  }
+  onMount(async () => {
+    subjects = await fetch.getSubjects();
+    console.log(subjects);
+  });
 </script>
 
 <div class="page">
@@ -24,7 +18,7 @@
   <Button
     width="230px"
     onClick={() => {
-      createSubject(subject);
+      fetch.createSubject(subject);
     }}>ADD SUBJECT</Button
   >
 </div>
