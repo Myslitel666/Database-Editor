@@ -26,4 +26,13 @@
       );
       return await response.json();
     }
+
+    static async execute(sql) {
+        const response = await fetch('/api/home/sql', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sql })
+        });
+        return await response.json();
+    }
   }

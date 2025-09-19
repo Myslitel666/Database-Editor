@@ -1,6 +1,6 @@
 <script>
   import { isMobile } from "svelte-elegant/utils";
-  import { Button, DataGrid } from "svelte-elegant";
+  import { Button, DataGrid, TextArea } from "svelte-elegant";
   import { PostgresProvider } from "$lib/providers/PostgresProvider";
   import DatabaseExplorer from "./DatabaseExplorer.svelte";
   import * as columnsUtils from "./columnsUtils";
@@ -21,6 +21,7 @@
   let theme;
   let xWindow;
   let xMobileDevice = false;
+  let sql = "";
 
   themeStore.subscribe((value) => {
     theme = value; //Инициализация объекта темы
@@ -121,6 +122,8 @@
       </div>
     </div>
   {/if}
+  <TextArea bind:value={sql} />
+  <Button onClick={() => PostgresProvider.execute(sql)}>Execute</Button>
 </div>
 
 <style>
