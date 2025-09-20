@@ -64,8 +64,6 @@
     subjects = await fetch.getSubjects();
     subjectWord = subjects.includes("React") ? "React" : subjects[0];
     specialWords = await fetch.getSpecialWords(subjectWord);
-
-    console.log(specialWords);
   });
 </script>
 
@@ -114,10 +112,17 @@
       <Button
         width="370px"
         onClick={() => {
+          const specialWordCopy = {
+            value: specialWord.value,
+            translate: specialWord.translate,
+            example_use: specialWord.example_use,
+          };
+          const subjectWordCopy = subjectWord;
+          toggleWordForm();
+
           fetch
-            .createSpecialWord(specialWord, subjectWord)
-            .then(() => getSpecialWords())
-            .then(() => toggleWordForm());
+            .createSpecialWord(specialWordCopy, subjectWordCopy)
+            .then(() => getSpecialWords());
         }}
       >
         ADD SPECIAL WORD
@@ -140,10 +145,13 @@
         bgColorHover="rgba(255,0,0,0.12)"
         width="370px"
         onClick={() => {
+          const updateValueCopy = updateValue;
+          const subjectWordCopy = subjectWord;
+          toggleWordForm();
+
           fetch
-            .deleteSpecialWord(updateValue, subjectWord)
-            .then(() => getSpecialWords())
-            .then(() => toggleWordForm());
+            .deleteSpecialWord(updateValueCopy, subjectWordCopy)
+            .then(() => getSpecialWords());
         }}
       >
         DELETE SPECIAL WORD
