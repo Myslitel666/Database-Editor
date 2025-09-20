@@ -83,6 +83,10 @@
     if (updateWord) specialWord = { ...updateWord }; // данные с бэка
   }
 
+  function clearUselessSpaces(str) {
+    return str.trim().replace(/\s+/g, " ");
+  }
+
   onMount(async () => {
     subjects = await fetch.getSubjects();
     subjectWord = subjects.includes("React") ? "React" : subjects[0];
@@ -133,6 +137,10 @@
       <Button
         width="370px"
         onClick={() => {
+          specialWord.value = clearUselessSpaces(specialWord.value);
+          specialWord.translate = clearUselessSpaces(specialWord.translate);
+          subjectWord = clearUselessSpaces(subjectWord);
+
           if (specialWord.value && specialWord.translate && subjectWord) {
             if (specialWords.map((s) => s.value).includes(specialWord.value)) {
               showMessage(
@@ -160,6 +168,11 @@
       <Button
         width="370px"
         onClick={() => {
+          specialWord.value = clearUselessSpaces(specialWord.value);
+          specialWord.translate = clearUselessSpaces(specialWord.translate);
+          updateValue = clearUselessSpaces(updateValue);
+          subjectWord = clearUselessSpaces(subjectWord);
+
           if (
             specialWord.value &&
             specialWord.translate &&
@@ -208,6 +221,9 @@
         bgColorHover="rgba(255,0,0,0.12)"
         width="370px"
         onClick={() => {
+          updateValue = clearUselessSpaces(updateValue);
+          subjectWord = clearUselessSpaces(subjectWord);
+
           if (updateValue && subjectWord) {
             if (specialWords.map((s) => s.value).includes(updateValue)) {
               const updateValueCopy = updateValue;
@@ -260,7 +276,10 @@
       marginBottom="7px"
       width="370px"
       onClick={() => {
+        subject = clearUselessSpaces(subject);
+
         if (subject) {
+          console.log(subjects);
           if (subjects.includes(subject)) {
             showMessage(
               true,
@@ -285,8 +304,12 @@
       marginBottom="7px"
       width="370px"
       onClick={() => {
+        updateSubject = clearUselessSpaces(updateSubject);
+        subject = clearUselessSpaces(subject);
+
         if (updateSubject && subject) {
           if (subjects.includes(updateSubject)) {
+            console.log(subjects);
             if (subjects.includes(subject)) {
               showMessage(
                 true,
@@ -321,6 +344,8 @@
       bgColorHover="rgba(255,0,0,0.12)"
       width="370px"
       onClick={() => {
+        updateSubject = clearUselessSpaces(updateSubject);
+
         if (updateSubject) {
           if (subjects.includes(updateSubject)) {
             const updateSubjectCopy = updateSubject;
