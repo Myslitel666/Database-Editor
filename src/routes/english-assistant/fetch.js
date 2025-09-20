@@ -90,6 +90,28 @@ export async function deleteSubject(title) {
     return data;
 }
 
+export async function updateSpecialWord(specialWord, value, subject) {
+    console.log(specialWord)
+    console.log(value)
+    console.log(subject)
+    const response = await fetch("/api/english-assistant/special-words", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        newValue: specialWord.value,
+        translate: specialWord.translate,
+        example_use: specialWord.example_use,
+        value: value,
+        subject: subject
+      }),
+    });
+
+    const data = await response.json();
+    return data;
+}
+
 export async function updateSubject(title, newTitle) {
     const response = await fetch("/api/english-assistant/subjects", {
       method: "PUT",

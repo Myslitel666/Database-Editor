@@ -20,12 +20,10 @@
 
   async function getSpecialWords() {
     specialWords = await fetch.getSpecialWords(subjectWord);
-    console.log(specialWords);
   }
 
   async function getSubjects() {
     subjects = await fetch.getSubjects();
-    console.log(subjects);
   }
 
   function toggleWordForm() {
@@ -53,10 +51,8 @@
 
   $: {
     if (updateValue) {
-      console.log("update: " + updateValue);
       const updateWord = specialWords.find((s) => s.value === updateValue);
       if (updateWord) specialWord = updateWord; // данные с бэка
-      console.log(specialWord);
     }
   }
 
@@ -131,8 +127,22 @@
       <Button
         width="370px"
         onClick={() => {
-          //fetch.createSubject(subject);
-          getSpecialWords();
+          const specialWordCopy = {
+            value: specialWord.value,
+            translate: specialWord.translate,
+            example_use: specialWord.example_use,
+          };
+          const updateValueCopy = updateValue;
+          const subjectWordCopy = subjectWord;
+          toggleWordForm();
+
+          fetch
+            .updateSpecialWord(
+              specialWordCopy,
+              updateValueCopy,
+              subjectWordCopy
+            )
+            .then(() => getSpecialWords());
         }}
       >
         UPDATE SPECIAL WORD

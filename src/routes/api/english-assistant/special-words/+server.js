@@ -64,3 +64,23 @@ export async function DELETE({ request }) {
       deleted: result.rows[0]
     }), { status: 200 });
 }
+
+export async function PUT({ request }) {
+  const { newValue, translate, example_use, value, subject } = await request.json();
+
+    const result = await englishAssistantPool.query(
+      `UPDATE special_words
+       SET value = $1,
+           translate = $2,
+           example_use = $3
+       WHERE value = $4
+         AND subject_id = (SELECT id FROM subjects WHERE title = $5)
+       RETURNING *;`,
+      [newValue, translate, example_use, value, subject]
+    );
+
+    return new Response(JSON.stringify({
+      success: true,
+      updated: result.rows[0]
+    }), { status: 200 });
+}
