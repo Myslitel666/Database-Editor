@@ -47,3 +47,20 @@ export async function POST({ request }) {
       data: result.rows[0]
     }), { status: 201 });
 }
+
+export async function DELETE({ request }) {
+  const { value, subject } = await request.json();
+
+  const result = await englishAssistantPool.query(`
+    DELETE FROM special_words
+        WHERE value = $1
+        AND subject_id = (SELECT id FROM subjects WHERE title = $2)
+        RETURNING *;`, 
+    [value, subject]
+  );
+
+    return new Response(JSON.stringify({
+      success: true,
+      deleted: result.rows[0]
+    }), { status: 200 });
+}

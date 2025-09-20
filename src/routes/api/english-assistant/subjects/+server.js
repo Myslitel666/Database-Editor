@@ -14,6 +14,22 @@ export async function GET() {
     });
 }
 
+export async function DELETE({ request }) {
+  const { title } = await request.json();
+
+  const result = await englishAssistantPool.query(`
+    DELETE FROM subjects
+        WHERE title = $1
+        RETURNING *;`, 
+    [title]
+  );
+
+  return new Response(JSON.stringify({
+    success: true,
+    deleted: result.rows[0]
+  }), { status: 200 });
+}
+
 export async function POST({ request }) {
     const { title } = await request.json();
         // Вставляем данные и возвращаем созданную запись

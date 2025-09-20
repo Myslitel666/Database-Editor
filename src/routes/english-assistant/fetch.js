@@ -56,3 +56,37 @@ export async function createSubject(sub) {
     console.log("Ответ от сервера: ", data);
     return data;
 }
+
+export async function deleteSpecialWord(value, subject) {
+    const response = await fetch("/api/english-assistant/special-words", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        value: value,
+        subject: subject
+      }),
+    });
+
+    const data = await response.json();
+    console.log("Ответ от сервера: ", data);
+    return data;
+}
+
+export async function deleteSubject(title) {
+  console.log(title)
+    const response = await fetch("/api/english-assistant/subjects", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: title
+      }),
+    });
+
+    const data = await response.json();
+    console.log("Ответ от сервера: ", data);
+    return data;
+}

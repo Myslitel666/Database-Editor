@@ -12,6 +12,7 @@
   let subjectWord = "";
   let subject = "";
   let updateValue = "";
+  let updateSubject = "";
   let wordAction = "Create";
   let subjectAction = "Create";
   let subjects;
@@ -22,17 +23,40 @@
     console.log(specialWords);
   }
 
-  $: {
-    if (subjectWord) {
-      getSpecialWords();
-      specialWord = { value: "", translate: "", example_use: "" };
-    }
+  async function getSubjects() {
+    subjects = await fetch.getSubjects();
+    console.log(subjects);
+  }
+
+  function toggleWordForm() {
+    specialWord = { value: "", translate: "", example_use: "" };
+    updateValue = "";
+  }
+
+  function toggleSubjectForm() {
+    subject = "";
+    updateSubject = "";
+  }
+
+  $: if (subjectAction) {
+    toggleSubjectForm();
+  }
+
+  $: if (wordAction) {
+    toggleWordForm();
+  }
+
+  $: if (subjectWord) {
+    getSpecialWords();
+    toggleWordForm();
   }
 
   $: {
     if (updateValue) {
-      (specialWord = specialWords.find((s) => s.value === updateValue)), // данные с бэка
-        console.log(specialWord);
+      console.log("update: " + updateValue);
+      const updateWord = specialWords.find((s) => s.value === updateValue);
+      if (updateWord) specialWord = updateWord; // данные с бэка
+      console.log(specialWord);
     }
   }
 
@@ -64,7 +88,7 @@
         width="182px"
       />
     </div>
-    {#if wordAction === "Update"}
+    {#if wordAction !== "Create"}
       <AutoComplete
         options={specialWords.map((s) => s.value)}
         bind:value={updateValue}
@@ -72,8 +96,8 @@
         width="370px"
       />
     {/if}
-    <TextField bind:value={specialWord.value} label="Value" width="370px" />
     {#if wordAction !== "Delete"}
+      <TextField bind:value={specialWord.value} label="Value" width="370px" />
       <TextField
         bind:value={specialWord.translate}
         label="Translate"
@@ -90,7 +114,10 @@
       <Button
         width="370px"
         onClick={() => {
-          fetch.createSpecialWord(specialWord, subjectWord);
+          fetch
+            .createSpecialWord(specialWord, subjectWord)
+            .then(() => getSpecialWords())
+            .then(() => toggleWordForm());
         }}
       >
         ADD SPECIAL WORD
@@ -100,6 +127,7 @@
         width="370px"
         onClick={() => {
           //fetch.createSubject(subject);
+          getSpecialWords();
         }}
       >
         UPDATE SPECIAL WORD
@@ -112,7 +140,10 @@
         bgColorHover="rgba(255,0,0,0.12)"
         width="370px"
         onClick={() => {
-          //fetch.createSubject(subject);
+          fetch
+            .deleteSpecialWord(updateValue, subjectWord)
+            .then(() => getSpecialWords())
+            .then(() => toggleWordForm());
         }}
       >
         DELETE SPECIAL WORD
@@ -128,21 +159,27 @@
     label="Action"
     width="370px"
   />
-  {#if subjectAction === "Update"}
+  {#if subjectAction !== "Create"}
     <AutoComplete
       isSelect
+      bind:value={updateSubject}
       label="Editing Subject"
       width="370px"
       options={subjects}
     />
   {/if}
-  <TextField bind:value={subject} label="Subject" width="370px" />
+  {#if subjectAction !== "Delete"}
+    <TextField bind:value={subject} label="Subject" width="370px" />
+  {/if}
   {#if subjectAction === "Create"}
     <Button
       marginBottom="7px"
       width="370px"
       onClick={() => {
-        fetch.createSubject(subject);
+        fetch
+          .createSubject(subject)
+          .then(() => getSubjects())
+          .then(() => toggleSubjectForm());
       }}
     >
       ADD SUBJECT
@@ -152,7 +189,7 @@
       marginBottom="7px"
       width="370px"
       onClick={() => {
-        fetch.createSubject(subject);
+        //fetch.createSubject(subject);
       }}
     >
       UPDATE SUBJECT
@@ -165,7 +202,10 @@
       bgColorHover="rgba(255,0,0,0.12)"
       width="370px"
       onClick={() => {
-        //fetch.createSubject(subject);
+        fetch
+          .deleteSubject(updateSubject)
+          .then(() => getSubjects())
+          .then(() => toggleSubjectForm());
       }}
     >
       DELETE SUBJECT
