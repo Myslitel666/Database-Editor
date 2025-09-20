@@ -176,10 +176,10 @@
       marginBottom="7px"
       width="370px"
       onClick={() => {
-        fetch
-          .createSubject(subject)
-          .then(() => getSubjects())
-          .then(() => toggleSubjectForm());
+        const subjectCopy = subject;
+        toggleSubjectForm();
+
+        fetch.createSubject(subjectCopy).then(() => getSubjects());
       }}
     >
       ADD SUBJECT
@@ -189,10 +189,13 @@
       marginBottom="7px"
       width="370px"
       onClick={() => {
+        const updateSubjectCopy = updateSubject;
+        const subjectCopy = subject;
+        toggleSubjectForm();
+
         fetch
-          .updateSubject(updateSubject, subject)
-          .then(() => getSubjects())
-          .then(() => toggleSubjectForm());
+          .updateSubject(updateSubjectCopy, subjectCopy)
+          .then(() => getSubjects());
       }}
     >
       UPDATE SUBJECT
@@ -205,10 +208,10 @@
       bgColorHover="rgba(255,0,0,0.12)"
       width="370px"
       onClick={() => {
-        fetch
-          .deleteSubject(updateSubject)
-          .then(() => getSubjects())
-          .then(() => toggleSubjectForm());
+        const updateSubjectCopy = updateSubject;
+        toggleSubjectForm();
+
+        fetch.deleteSubject(updateSubjectCopy).then(() => getSubjects());
       }}
     >
       DELETE SUBJECT
