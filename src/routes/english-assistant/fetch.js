@@ -75,7 +75,6 @@ export async function deleteSpecialWord(value, subject) {
 }
 
 export async function deleteSubject(title) {
-  console.log(title)
     const response = await fetch("/api/english-assistant/subjects", {
       method: "DELETE",
       headers: {
@@ -83,6 +82,23 @@ export async function deleteSubject(title) {
       },
       body: JSON.stringify({
         title: title
+      }),
+    });
+
+    const data = await response.json();
+    console.log("Ответ от сервера: ", data);
+    return data;
+}
+
+export async function updateSubject(title, newTitle) {
+    const response = await fetch("/api/english-assistant/subjects", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: title,
+        newTitle: newTitle
       }),
     });
 

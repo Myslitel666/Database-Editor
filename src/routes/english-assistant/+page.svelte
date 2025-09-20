@@ -189,7 +189,10 @@
       marginBottom="7px"
       width="370px"
       onClick={() => {
-        //fetch.createSubject(subject);
+        fetch
+          .updateSubject(updateSubject, subject)
+          .then(() => getSubjects())
+          .then(() => toggleSubjectForm());
       }}
     >
       UPDATE SUBJECT

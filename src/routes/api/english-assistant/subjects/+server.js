@@ -14,22 +14,6 @@ export async function GET() {
     });
 }
 
-export async function DELETE({ request }) {
-  const { title } = await request.json();
-
-  const result = await englishAssistantPool.query(`
-    DELETE FROM subjects
-        WHERE title = $1
-        RETURNING *;`, 
-    [title]
-  );
-
-  return new Response(JSON.stringify({
-    success: true,
-    deleted: result.rows[0]
-  }), { status: 200 });
-}
-
 export async function POST({ request }) {
     const { title } = await request.json();
         // Вставляем данные и возвращаем созданную запись
@@ -46,3 +30,38 @@ export async function POST({ request }) {
             status: 201, // 201 Created
         });
 }
+
+
+export async function DELETE({ request }) {
+  const { title } = await request.json();
+
+  const result = await englishAssistantPool.query(`
+    DELETE FROM subjects
+        WHERE title = $1
+        RETURNING *;`, 
+    [title]
+  );
+
+  return new Response(JSON.stringify({
+    success: true,
+    deleted: result.rows[0]
+  }), { status: 200 });
+}
+
+export async function PUT({ request }) {
+  const { title, newTitle } = await request.json();
+
+    const result = await englishAssistantPool.query(
+      `UPDATE subjects
+       SET title = $1
+       WHERE title = $2
+       RETURNING *;`,
+      [newTitle, title]
+    );
+
+    return new Response(JSON.stringify({
+      success: true,
+      updated: result.rows[0]
+    }), { status: 200 });
+}
+
