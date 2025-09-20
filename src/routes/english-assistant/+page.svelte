@@ -95,14 +95,12 @@
     <h2 style:margin="0">Special Words Form</h2>
     <div class="special-words-block gap">
       <AutoComplete
-        isSelect
         options={["Create", "Update", "Delete"]}
         bind:value={wordAction}
         label="Action"
         width="181px"
       />
       <AutoComplete
-        isSelect
         options={subjects}
         bind:value={subjectWord}
         label="Subject"
@@ -225,7 +223,6 @@
   </div>
   <h2 style:margin="0" style:margin-top="29px">Subject Form</h2>
   <AutoComplete
-    isSelect
     options={["Create", "Update", "Delete"]}
     bind:value={subjectAction}
     label="Action"
@@ -233,7 +230,6 @@
   />
   {#if subjectAction !== "Create"}
     <AutoComplete
-      isSelect
       bind:value={updateSubject}
       label="Editing Subject"
       width="370px"
@@ -249,11 +245,18 @@
       width="370px"
       onClick={() => {
         if (subject) {
-          const subjectCopy = subject;
-          toggleSubjectForm();
-          showMessage(false, "The subject added successfully");
+          if (subjects.includes(subject)) {
+            showMessage(
+              true,
+              "The subject with that name has already been created"
+            );
+          } else {
+            const subjectCopy = subject;
+            toggleSubjectForm();
+            showMessage(false, "The subject added successfully");
 
-          fetch.createSubject(subjectCopy).then(() => getSubjects());
+            fetch.createSubject(subjectCopy).then(() => getSubjects());
+          }
         } else {
           showMessage(true, "Fill in all the fields");
         }
@@ -267,14 +270,25 @@
       width="370px"
       onClick={() => {
         if (updateSubject && subject) {
-          const updateSubjectCopy = updateSubject;
-          const subjectCopy = subject;
-          toggleSubjectForm();
-          showMessage(false, "The subject updated successfully");
+          if (subjects.includes(updateSubject)) {
+            if (subjects.includes(subject)) {
+              showMessage(
+                true,
+                "The subject with that name has already been created"
+              );
+            } else {
+              const updateSubjectCopy = updateSubject;
+              const subjectCopy = subject;
+              toggleSubjectForm();
+              showMessage(false, "The subject updated successfully");
 
-          fetch
-            .updateSubject(updateSubjectCopy, subjectCopy)
-            .then(() => getSubjects());
+              fetch
+                .updateSubject(updateSubjectCopy, subjectCopy)
+                .then(() => getSubjects());
+            }
+          } else {
+            showMessage(true, "The subject you are editing is missing.");
+          }
         } else {
           showMessage(true, "Fill in all the fields");
         }
@@ -292,11 +306,14 @@
       width="370px"
       onClick={() => {
         if (updateSubject) {
-          const updateSubjectCopy = updateSubject;
-          toggleSubjectForm();
-          showMessage(false, "The subject deleted successfully");
-
-          fetch.deleteSubject(updateSubjectCopy).then(() => getSubjects());
+          if (subjects.includes(updateSubject)) {
+            const updateSubjectCopy = updateSubject;
+            toggleSubjectForm();
+            showMessage(false, "The subject deleted successfully");
+            fetch.deleteSubject(updateSubjectCopy).then(() => getSubjects());
+          } else {
+            showMessage(true, "The subject you are deleting is missing.");
+          }
         } else {
           showMessage(true, "Fill in all the fields");
         }
