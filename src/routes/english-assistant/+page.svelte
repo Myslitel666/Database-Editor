@@ -3,21 +3,45 @@
   import { onMount } from "svelte";
   import * as fetch from "./fetch";
 
-  let subject = "";
   let specialWord = {
     value: "",
     translate: "",
-    example_of_use: "",
-    subjectTitle: "React",
+    example_use: "",
   };
+
+  let subjectWord = "";
+  let subject = "";
+  let updateValue = "";
   let wordAction = "Create";
   let subjectAction = "Create";
-
   let subjects;
+  let specialWords;
+
+  async function getSpecialWords() {
+    specialWords = await fetch.getSpecialWords(subjectWord);
+    console.log(specialWords);
+  }
+
+  $: {
+    if (subjectWord) {
+      getSpecialWords();
+      specialWord = { value: "", translate: "", example_use: "" };
+    }
+  }
+
+  $: {
+    if (updateValue) {
+      (specialWord = specialWords.find((s) => s.value === updateValue)), // данные с бэка
+        console.log(specialWord);
+    }
+  }
 
   onMount(async () => {
     subjects = await fetch.getSubjects();
-    console.log(subjects);
+    subjectWord = subjects.includes("React") ? "React" : subjects[0];
+    specialWords = await fetch.getSpecialWords(subjectWord);
+
+    console.log(specialWords);
   });
 </script>
 
@@ -35,13 +59,18 @@
       <AutoComplete
         isSelect
         options={subjects}
-        bind:value={specialWord.subjectTitle}
+        bind:value={subjectWord}
         label="Subject"
         width="182px"
       />
     </div>
     {#if wordAction === "Update"}
-      <AutoComplete label="Editing Value" width="370px" />
+      <AutoComplete
+        options={specialWords.map((s) => s.value)}
+        bind:value={updateValue}
+        label="Editing Value"
+        width="370px"
+      />
     {/if}
     <TextField bind:value={specialWord.value} label="Value" width="370px" />
     {#if wordAction !== "Delete"}
@@ -52,7 +81,7 @@
       />
       <p>Example of Use:</p>
       <TextArea
-        bind:value={specialWord.example_of_use}
+        bind:value={specialWord.example_use}
         width="370px"
         label="Example of Use"
       />
@@ -61,7 +90,7 @@
       <Button
         width="370px"
         onClick={() => {
-          fetch.createSpecialWord(specialWord);
+          fetch.createSpecialWord(specialWord, subjectWord);
         }}
       >
         ADD SPECIAL WORD

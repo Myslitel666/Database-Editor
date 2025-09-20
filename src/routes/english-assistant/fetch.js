@@ -1,3 +1,15 @@
+export async function getSpecialWords(sub) {
+    const response = await fetch(`/api/english-assistant/special-words?subject=${sub}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+
+    const data = await response.json();
+    return data.special_words;
+}
+
 export async function getSubjects() {
     const response = await fetch("/api/english-assistant/subjects", {
       method: "GET",
@@ -7,10 +19,10 @@ export async function getSubjects() {
     });
 
     const data = await response.json();
-    return data.subjects.map(s => s.title);;
+    return data.subjects.map(s => s.title);
 }
 
-export async function createSpecialWord(specialWord) {
+export async function createSpecialWord(specialWord, subjectWord) {
     const response = await fetch("/api/english-assistant/special-words", {
       method: "POST",
       headers: {
@@ -20,7 +32,7 @@ export async function createSpecialWord(specialWord) {
         value: specialWord.value,
         translate: specialWord.translate,
         example_use: specialWord.example_use,
-        subjectTitle: specialWord.subjectTitle
+        subject: subjectWord
       }),
     });
 
