@@ -1,5 +1,11 @@
 <script>
-  import { TextField, Button, AutoComplete, TextArea } from "svelte-elegant";
+  import {
+    TextField,
+    Button,
+    AutoComplete,
+    TextArea,
+    Message,
+  } from "svelte-elegant";
   import { onMount } from "svelte";
   import * as fetch from "./fetch";
 
@@ -9,6 +15,10 @@
     example_use: "",
   };
 
+  let feedbackTimer = null;
+  let messageFeedback = "";
+  let isVisibleFeedback = false;
+  let isErrorFeedback = false;
   let subjectWord = "";
   let subject = "";
   let updateValue = "";
@@ -36,6 +46,25 @@
     updateSubject = "";
   }
 
+  function showMessage(isError, message) {
+    // 1. Сбрасываем предыдущий таймер
+    if (feedbackTimer) {
+      clearTimeout(feedbackTimer);
+      feedbackTimer = null;
+    }
+
+    // 2. Показываем новое сообщение
+    isErrorFeedback = isError;
+    messageFeedback = message;
+    isVisibleFeedback = true;
+
+    // 3. Запускаем новый таймер
+    feedbackTimer = setTimeout(() => {
+      isVisibleFeedback = false;
+      feedbackTimer = null;
+    }, 2750);
+  }
+
   $: if (subjectAction) {
     toggleSubjectForm();
   }
@@ -49,11 +78,9 @@
     toggleWordForm();
   }
 
-  $: {
-    if (updateValue) {
-      const updateWord = specialWords.find((s) => s.value === updateValue);
-      if (updateWord) specialWord = updateWord; // данные с бэка
-    }
+  $: if (updateValue) {
+    const updateWord = specialWords.find((s) => s.value === updateValue);
+    if (updateWord) specialWord = updateWord; // данные с бэка
   }
 
   onMount(async () => {
@@ -64,7 +91,7 @@
 </script>
 
 <div class="page gap">
-  <div class="special-words gap">
+  <div class="special-words gap" style:position="relative">
     <h2 style:margin="0">Special Words Form</h2>
     <div class="special-words-block gap">
       <AutoComplete
@@ -108,17 +135,22 @@
       <Button
         width="370px"
         onClick={() => {
-          const specialWordCopy = {
-            value: specialWord.value,
-            translate: specialWord.translate,
-            example_use: specialWord.example_use,
-          };
-          const subjectWordCopy = subjectWord;
-          toggleWordForm();
+          if (specialWord.value && specialWord.translate && subjectWord) {
+            const specialWordCopy = {
+              value: specialWord.value,
+              translate: specialWord.translate,
+              example_use: specialWord.example_use,
+            };
+            const subjectWordCopy = subjectWord;
+            toggleWordForm();
+            showMessage(false, "The special word added successfully");
 
-          fetch
-            .createSpecialWord(specialWordCopy, subjectWordCopy)
-            .then(() => getSpecialWords());
+            fetch
+              .createSpecialWord(specialWordCopy, subjectWordCopy)
+              .then(() => getSpecialWords());
+          } else {
+            showMessage(true, "Fill in all the fields");
+          }
         }}
       >
         ADD SPECIAL WORD
@@ -127,22 +159,32 @@
       <Button
         width="370px"
         onClick={() => {
-          const specialWordCopy = {
-            value: specialWord.value,
-            translate: specialWord.translate,
-            example_use: specialWord.example_use,
-          };
-          const updateValueCopy = updateValue;
-          const subjectWordCopy = subjectWord;
-          toggleWordForm();
+          if (
+            specialWord.value &&
+            specialWord.translate &&
+            updateValue &&
+            subjectWord
+          ) {
+            const specialWordCopy = {
+              value: specialWord.value,
+              translate: specialWord.translate,
+              example_use: specialWord.example_use,
+            };
+            const updateValueCopy = updateValue;
+            const subjectWordCopy = subjectWord;
+            toggleWordForm();
+            showMessage(false, "The special word updated successfully");
 
-          fetch
-            .updateSpecialWord(
-              specialWordCopy,
-              updateValueCopy,
-              subjectWordCopy
-            )
-            .then(() => getSpecialWords());
+            fetch
+              .updateSpecialWord(
+                specialWordCopy,
+                updateValueCopy,
+                subjectWordCopy
+              )
+              .then(() => getSpecialWords());
+          } else {
+            showMessage(true, "Fill in all the fields");
+          }
         }}
       >
         UPDATE SPECIAL WORD
@@ -155,20 +197,32 @@
         bgColorHover="rgba(255,0,0,0.12)"
         width="370px"
         onClick={() => {
-          const updateValueCopy = updateValue;
-          const subjectWordCopy = subjectWord;
-          toggleWordForm();
+          if (updateValue && subjectWord) {
+            const updateValueCopy = updateValue;
+            const subjectWordCopy = subjectWord;
+            toggleWordForm();
+            showMessage(false, "The special word deleted successfully");
 
-          fetch
-            .deleteSpecialWord(updateValueCopy, subjectWordCopy)
-            .then(() => getSpecialWords());
+            fetch
+              .deleteSpecialWord(updateValueCopy, subjectWordCopy)
+              .then(() => getSpecialWords());
+          } else {
+            showMessage(true, "Fill in all the fields");
+          }
         }}
       >
         DELETE SPECIAL WORD
       </Button>
     {/if}
+    <div class="message">
+      <Message
+        bind:isVisible={isVisibleFeedback}
+        bind:isError={isErrorFeedback}
+      >
+        {messageFeedback}
+      </Message>
+    </div>
   </div>
-
   <h2 style:margin="0" style:margin-top="29px">Subject Form</h2>
   <AutoComplete
     isSelect
@@ -194,10 +248,15 @@
       marginBottom="7px"
       width="370px"
       onClick={() => {
-        const subjectCopy = subject;
-        toggleSubjectForm();
+        if (subject) {
+          const subjectCopy = subject;
+          toggleSubjectForm();
+          showMessage(false, "The subject added successfully");
 
-        fetch.createSubject(subjectCopy).then(() => getSubjects());
+          fetch.createSubject(subjectCopy).then(() => getSubjects());
+        } else {
+          showMessage(true, "Fill in all the fields");
+        }
       }}
     >
       ADD SUBJECT
@@ -207,29 +266,40 @@
       marginBottom="7px"
       width="370px"
       onClick={() => {
-        const updateSubjectCopy = updateSubject;
-        const subjectCopy = subject;
-        toggleSubjectForm();
+        if (updateSubject && subject) {
+          const updateSubjectCopy = updateSubject;
+          const subjectCopy = subject;
+          toggleSubjectForm();
+          showMessage(false, "The subject updated successfully");
 
-        fetch
-          .updateSubject(updateSubjectCopy, subjectCopy)
-          .then(() => getSubjects());
+          fetch
+            .updateSubject(updateSubjectCopy, subjectCopy)
+            .then(() => getSubjects());
+        } else {
+          showMessage(true, "Fill in all the fields");
+        }
       }}
     >
       UPDATE SUBJECT
     </Button>
   {:else}
     <Button
+      marginBottom="7px"
       variant="Outlined"
       borderColor="red"
       color="red"
       bgColorHover="rgba(255,0,0,0.12)"
       width="370px"
       onClick={() => {
-        const updateSubjectCopy = updateSubject;
-        toggleSubjectForm();
+        if (updateSubject) {
+          const updateSubjectCopy = updateSubject;
+          toggleSubjectForm();
+          showMessage(false, "The subject deleted successfully");
 
-        fetch.deleteSubject(updateSubjectCopy).then(() => getSubjects());
+          fetch.deleteSubject(updateSubjectCopy).then(() => getSubjects());
+        } else {
+          showMessage(true, "Fill in all the fields");
+        }
       }}
     >
       DELETE SUBJECT
@@ -238,6 +308,12 @@
 </div>
 
 <style>
+  .message {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin-bottom: -40px;
+  }
   .gap {
     display: flex;
     gap: 7px;
