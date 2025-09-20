@@ -37,7 +37,6 @@ export async function createSpecialWord(specialWord, subjectWord) {
     });
 
     const data = await response.json();
-    console.log("Ответ от сервера: ", data);
     return data;
 }
 
@@ -53,7 +52,6 @@ export async function createSubject(sub) {
     });
 
     const data = await response.json();
-    console.log("Ответ от сервера: ", data);
     return data;
 }
 
@@ -70,7 +68,6 @@ export async function deleteSpecialWord(value, subject) {
     });
 
     const data = await response.json();
-    console.log("Ответ от сервера: ", data);
     return data;
 }
 
@@ -86,14 +83,10 @@ export async function deleteSubject(title) {
     });
 
     const data = await response.json();
-    console.log("Ответ от сервера: ", data);
     return data;
 }
 
 export async function updateSpecialWord(specialWord, value, subject) {
-    console.log(specialWord)
-    console.log(value)
-    console.log(subject)
     const response = await fetch("/api/english-assistant/special-words", {
       method: "PUT",
       headers: {
@@ -125,6 +118,5 @@ export async function updateSubject(title, newTitle) {
     });
 
     const data = await response.json();
-    console.log("Ответ от сервера: ", data);
     return data;
 }

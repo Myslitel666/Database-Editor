@@ -80,7 +80,7 @@
 
   $: if (updateValue) {
     const updateWord = specialWords.find((s) => s.value === updateValue);
-    if (updateWord) specialWord = updateWord; // данные с бэка
+    if (updateWord) specialWord = { ...updateWord }; // данные с бэка
   }
 
   onMount(async () => {
@@ -134,18 +134,21 @@
         width="370px"
         onClick={() => {
           if (specialWord.value && specialWord.translate && subjectWord) {
-            const specialWordCopy = {
-              value: specialWord.value,
-              translate: specialWord.translate,
-              example_use: specialWord.example_use,
-            };
-            const subjectWordCopy = subjectWord;
-            toggleWordForm();
-            showMessage(false, "The special word added successfully");
+            if (specialWords.map((s) => s.value).includes(specialWord.value)) {
+              showMessage(
+                true,
+                "Such the Special Word is already in this dictionary"
+              );
+            } else {
+              const specialWordCopy = { ...specialWord };
+              const subjectWordCopy = subjectWord;
+              toggleWordForm();
+              showMessage(false, "The special word added successfully");
 
-            fetch
-              .createSpecialWord(specialWordCopy, subjectWordCopy)
-              .then(() => getSpecialWords());
+              fetch
+                .createSpecialWord(specialWordCopy, subjectWordCopy)
+                .then(() => getSpecialWords());
+            }
           } else {
             showMessage(true, "Fill in all the fields");
           }
@@ -163,23 +166,33 @@
             updateValue &&
             subjectWord
           ) {
-            const specialWordCopy = {
-              value: specialWord.value,
-              translate: specialWord.translate,
-              example_use: specialWord.example_use,
-            };
-            const updateValueCopy = updateValue;
-            const subjectWordCopy = subjectWord;
-            toggleWordForm();
-            showMessage(false, "The special word updated successfully");
+            console.log(specialWords);
+            if (specialWords.map((s) => s.value).includes(updateValue)) {
+              if (
+                specialWords.map((s) => s.value).includes(specialWord.value)
+              ) {
+                showMessage(
+                  true,
+                  "Such the Special Word is already in this dictionary"
+                );
+              } else {
+                const specialWordCopy = { ...specialWord };
+                const updateValueCopy = updateValue;
+                const subjectWordCopy = subjectWord;
+                toggleWordForm();
+                showMessage(false, "The special word updated successfully");
 
-            fetch
-              .updateSpecialWord(
-                specialWordCopy,
-                updateValueCopy,
-                subjectWordCopy
-              )
-              .then(() => getSpecialWords());
+                fetch
+                  .updateSpecialWord(
+                    specialWordCopy,
+                    updateValueCopy,
+                    subjectWordCopy
+                  )
+                  .then(() => getSpecialWords());
+              }
+            } else {
+              showMessage(true, "The Special Word you are editing is missing");
+            }
           } else {
             showMessage(true, "Fill in all the fields");
           }
@@ -196,14 +209,17 @@
         width="370px"
         onClick={() => {
           if (updateValue && subjectWord) {
-            const updateValueCopy = updateValue;
-            const subjectWordCopy = subjectWord;
-            toggleWordForm();
-            showMessage(false, "The special word deleted successfully");
-
-            fetch
-              .deleteSpecialWord(updateValueCopy, subjectWordCopy)
-              .then(() => getSpecialWords());
+            if (specialWords.map((s) => s.value).includes(updateValue)) {
+              const updateValueCopy = updateValue;
+              const subjectWordCopy = subjectWord;
+              toggleWordForm();
+              showMessage(false, "The special word deleted successfully");
+              fetch
+                .deleteSpecialWord(updateValueCopy, subjectWordCopy)
+                .then(() => getSpecialWords());
+            } else {
+              showMessage(true, "The Special Word you are deleting is missing");
+            }
           } else {
             showMessage(true, "Fill in all the fields");
           }
