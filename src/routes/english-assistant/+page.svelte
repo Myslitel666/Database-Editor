@@ -182,7 +182,8 @@
             console.log(specialWords);
             if (specialWords.map((s) => s.value).includes(updateValue)) {
               if (
-                specialWords.map((s) => s.value).includes(specialWord.value)
+                specialWords.map((s) => s.value).includes(specialWord.value) &&
+                updateValue !== specialWord.value
               ) {
                 showMessage(
                   true,
