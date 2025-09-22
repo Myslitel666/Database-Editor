@@ -66,6 +66,14 @@
     }, 2750);
   }
 
+  $: if (specialWord.value) {
+    specialWord.value = specialWord.value.toLowerCase();
+  }
+
+  $: if (specialWord.level) {
+    specialWord.level = specialWord.level.toUpperCase();
+  }
+
   $: if (subjectAction) {
     toggleSubjectForm();
   }
