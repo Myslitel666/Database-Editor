@@ -77,7 +77,6 @@
       updateValue &&
       subjectWord
     ) {
-      console.log(specialWords);
       if (specialWords.map((s) => s.value).includes(updateValue)) {
         if (
           specialWords.map((s) => s.value).includes(specialWord.value) &&
@@ -343,7 +342,6 @@
         subject = clearUselessSpaces(subject);
 
         if (subject) {
-          console.log(subjects);
           if (subjects.includes(subject)) {
             showMessage(
               true,
@@ -373,7 +371,6 @@
 
         if (updateSubject && subject) {
           if (subjects.includes(updateSubject)) {
-            console.log(subjects);
             if (subjects.includes(subject)) {
               showMessage(
                 true,
