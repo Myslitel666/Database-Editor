@@ -174,6 +174,20 @@
     }, 2750);
   }
 
+  function rusToEng(word, e) {
+    const symbol = e.data;
+    const errorSymbols = "йцукенгшщзфывапролдячсмить";
+    const rightSymbols = "qwertyuiopasdfghjklzxcvbnm";
+
+    const index = errorSymbols.indexOf(symbol); // <- индекс символа
+
+    if (index !== -1) {
+      word = word.slice(0, -1) + rightSymbols[index];
+    }
+
+    return word;
+  }
+
   $: if (specialWord.value) {
     specialWord.value = specialWord.value.toLowerCase();
   }
@@ -259,16 +273,7 @@
       <TextField
         bind:value={specialWord.value}
         oninput={(e) => {
-          const symbol = e.data;
-          const errorSymbols = "йцукенгшщзфывапролдячсмить";
-          const rightSymbols = "qwertyuiopasdfghjklzxcvbnm";
-
-          const index = errorSymbols.indexOf(symbol); // <- индекс символа
-
-          if (index !== -1) {
-            specialWord.value =
-              specialWord.value.slice(0, -1) + rightSymbols[index];
-          }
+          specialWord.value = rusToEng(specialWord.value, e);
         }}
         label="Value"
         width="370px"
@@ -294,16 +299,7 @@
         bind:value={specialWord.level}
         label="Level"
         oninput={(e) => {
-          const symbol = e.data;
-          const errorSymbols = "йцукенгшщзфывапролдячсмить";
-          const rightSymbols = "qwertyuiopasdfghjklzxcvbnm";
-
-          const index = errorSymbols.indexOf(symbol); // <- индекс символа
-
-          if (index !== -1) {
-            specialWord.level =
-              specialWord.level.slice(0, -1) + rightSymbols[index];
-          }
+          specialWord.level = rusToEng(specialWord.level, e);
         }}
         width="370px"
       />
