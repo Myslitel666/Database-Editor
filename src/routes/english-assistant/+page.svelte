@@ -248,7 +248,7 @@
         bind:value={specialWord.value}
         oninput={(e) => {
           const symbol = e.data;
-          const errorSymbols = "йцукенгшщзфывапролджэячсмить";
+          const errorSymbols = "йцукенгшщзфывапролдячсмить";
           const rightSymbols = "qwertyuiopasdfghjklzxcvbnm";
 
           const index = errorSymbols.indexOf(symbol); // <- индекс символа
