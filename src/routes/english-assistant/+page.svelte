@@ -246,10 +246,7 @@
           const index = errorSymbols.indexOf(symbol); // <- индекс символа
 
           if (index !== -1) {
-            updateValue = updateValue.replace(
-              new RegExp(symbol, "g"), // 'g' - global, заменяет все вхождения
-              rightSymbols[index]
-            );
+            updateValue = updateValue.slice(0, -1) + rightSymbols[index];
           }
         }}
         label="Editing Value"
@@ -267,10 +264,8 @@
           const index = errorSymbols.indexOf(symbol); // <- индекс символа
 
           if (index !== -1) {
-            specialWord.value = specialWord.value.replace(
-              new RegExp(symbol, "g"), // 'g' - global, заменяет все вхождения
-              rightSymbols[index]
-            );
+            specialWord.value =
+              specialWord.value.slice(0, -1) + rightSymbols[index];
           }
         }}
         label="Value"
@@ -286,10 +281,8 @@
           const index = errorSymbols.indexOf(symbol); // <- индекс символа
 
           if (index !== -1) {
-            specialWord.translate = specialWord.translate.replace(
-              new RegExp(symbol, "g"), // 'g' - global, заменяет все вхождения
-              rightSymbols[index]
-            );
+            specialWord.translate =
+              specialWord.translate.slice(0, -1) + rightSymbols[index];
           }
         }}
         label="Translate"
