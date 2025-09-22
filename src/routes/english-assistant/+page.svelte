@@ -177,6 +177,10 @@
     specialWord.value = specialWord.value.toLowerCase();
   }
 
+  $: if (specialWord.translate) {
+    specialWord.translate = specialWord.translate.toLowerCase();
+  }
+
   $: if (specialWord.level) {
     specialWord.level = specialWord.level.toUpperCase();
   }
@@ -240,7 +244,27 @@
       />
     {/if}
     {#if wordAction !== "Delete"}
-      <TextField bind:value={specialWord.value} label="Value" width="370px" />
+      <TextField
+        bind:value={specialWord.value}
+        oninput={(e) => {
+          const symbol = e.data;
+          const errorSymbols = "йцукенгшщзфывапролджэячсмить";
+          const rightSymbols = "qwertyuiopasdfghjklzxcvbnm";
+
+          const index = errorSymbols.indexOf(symbol); // <- индекс символа
+
+          if (index !== -1) {
+            specialWord.value = specialWord.value.substring(
+              0,
+              specialWord.value.length - 1
+            );
+
+            specialWord.value += rightSymbols[index];
+          }
+        }}
+        label="Value"
+        width="370px"
+      />
       <TextField
         bind:value={specialWord.translate}
         label="Translate"
