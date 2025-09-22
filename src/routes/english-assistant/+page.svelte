@@ -267,6 +267,22 @@
       />
       <TextField
         bind:value={specialWord.translate}
+        oninput={(e) => {
+          const symbol = e.data;
+          const errorSymbols = "qwertyuiop[]asdfghjkl;'zxcvbnm,.";
+          const rightSymbols = "йцукенгшщзхъфывапролджэячсмитьбю";
+
+          const index = errorSymbols.indexOf(symbol); // <- индекс символа
+
+          if (index !== -1) {
+            specialWord.translate = specialWord.translate.substring(
+              0,
+              specialWord.translate.length - 1
+            );
+
+            specialWord.translate += rightSymbols[index];
+          }
+        }}
         label="Translate"
         width="370px"
       />
