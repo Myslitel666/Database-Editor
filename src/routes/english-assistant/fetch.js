@@ -32,6 +32,7 @@ export async function createSpecialWord(specialWord, subjectWord) {
         value: specialWord.value,
         translate: specialWord.translate,
         example_use: specialWord.example_use,
+        level: specialWord.level,
         subject: subjectWord
       }),
     });
@@ -97,7 +98,8 @@ export async function updateSpecialWord(specialWord, value, subject) {
         translate: specialWord.translate,
         example_use: specialWord.example_use,
         value: value,
-        subject: subject
+        subject: subject,
+        level: specialWord.level
       }),
     });
 

@@ -13,6 +13,7 @@
     value: "",
     translate: "",
     example_use: "",
+    level: "B",
   };
 
   let feedbackTimer = null;
@@ -37,7 +38,7 @@
   }
 
   function toggleWordForm() {
-    specialWord = { value: "", translate: "", example_use: "" };
+    specialWord = { value: "", translate: "", example_use: "", level: "B" };
     updateValue = "";
   }
 
@@ -126,6 +127,7 @@
         label="Translate"
         width="370px"
       />
+      <TextField bind:value={specialWord.level} label="Level" width="370px" />
       <p>Example of Use:</p>
       <TextArea
         bind:value={specialWord.example_use}
@@ -139,6 +141,7 @@
         onClick={() => {
           specialWord.value = clearUselessSpaces(specialWord.value);
           specialWord.translate = clearUselessSpaces(specialWord.translate);
+          specialWord.level = clearUselessSpaces(specialWord.level);
           subjectWord = clearUselessSpaces(subjectWord);
 
           if (specialWord.value && specialWord.translate && subjectWord) {
@@ -170,6 +173,7 @@
         onClick={() => {
           specialWord.value = clearUselessSpaces(specialWord.value);
           specialWord.translate = clearUselessSpaces(specialWord.translate);
+          specialWord.level = clearUselessSpaces(specialWord.level);
           updateValue = clearUselessSpaces(updateValue);
           subjectWord = clearUselessSpaces(subjectWord);
 

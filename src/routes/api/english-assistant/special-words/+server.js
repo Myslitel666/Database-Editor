@@ -9,11 +9,12 @@ export async function GET({ url }) {
     SELECT 
       sw.value,
       sw.translate,
-      sw.example_use
+      sw.example_use,
+      sw.level
     FROM special_words sw
     LEFT JOIN subjects s ON sw.subject_id = s.id
     WHERE s.title = $1
-    ORDER BY sw.id DESC
+    ORDER BY sw.level DESC, sw.id DESC
   `;
   
   const result = await englishAssistantPool.query(query, params);
@@ -28,18 +29,19 @@ export async function GET({ url }) {
 }
 
 export async function POST({ request }) {
-    const { value, translate, example_use, subject } = await request.json();
+    const { value, translate, example_use, subject, level } = await request.json();
 
     const result = await englishAssistantPool.query(
-      `INSERT INTO Special_Words (value, translate, example_use, subject_id)
+      `INSERT INTO Special_Words (value, translate, example_use, subject_id, level)
         VALUES (
             $1,
             $2,
             $3,
-            (SELECT id FROM Subjects WHERE title = $4)
+            (SELECT id FROM Subjects WHERE title = $4),
+            $5
         )
         RETURNING *;`,
-      [value,  translate, example_use, subject]
+      [value,  translate, example_use, subject, level]
     );
 
     return new Response(JSON.stringify({
@@ -66,17 +68,18 @@ export async function DELETE({ request }) {
 }
 
 export async function PUT({ request }) {
-  const { newValue, translate, example_use, value, subject } = await request.json();
+  const { newValue, translate, example_use, value, subject, level } = await request.json();
 
     const result = await englishAssistantPool.query(
       `UPDATE special_words
        SET value = $1,
            translate = $2,
-           example_use = $3
+           example_use = $3,
+           level = $6
        WHERE value = $4
          AND subject_id = (SELECT id FROM subjects WHERE title = $5)
        RETURNING *;`,
-      [newValue, translate, example_use, value, subject]
+      [newValue, translate, example_use, value, subject, level]
     );
 
     return new Response(JSON.stringify({
