@@ -254,12 +254,10 @@
           const index = errorSymbols.indexOf(symbol); // <- индекс символа
 
           if (index !== -1) {
-            specialWord.value = specialWord.value.substring(
-              0,
-              specialWord.value.length - 1
+            specialWord.value = specialWord.value.replace(
+              new RegExp(symbol, "g"), // 'g' - global, заменяет все вхождения
+              rightSymbols[index]
             );
-
-            specialWord.value += rightSymbols[index];
           }
         }}
         label="Value"
@@ -275,12 +273,10 @@
           const index = errorSymbols.indexOf(symbol); // <- индекс символа
 
           if (index !== -1) {
-            specialWord.translate = specialWord.translate.substring(
-              0,
-              specialWord.translate.length - 1
+            specialWord.translate = specialWord.translate.replace(
+              new RegExp(symbol, "g"), // 'g' - global, заменяет все вхождения
+              rightSymbols[index]
             );
-
-            specialWord.translate += rightSymbols[index];
           }
         }}
         label="Translate"
