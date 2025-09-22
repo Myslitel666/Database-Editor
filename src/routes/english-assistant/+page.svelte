@@ -238,6 +238,20 @@
       <AutoComplete
         options={specialWords.map((s) => s.value)}
         bind:value={updateValue}
+        oninput={(e) => {
+          const symbol = e.data;
+          const errorSymbols = "йцукенгшщзфывапролдячсмить";
+          const rightSymbols = "qwertyuiopasdfghjklzxcvbnm";
+
+          const index = errorSymbols.indexOf(symbol); // <- индекс символа
+
+          if (index !== -1) {
+            updateValue = updateValue.replace(
+              new RegExp(symbol, "g"), // 'g' - global, заменяет все вхождения
+              rightSymbols[index]
+            );
+          }
+        }}
         label="Editing Value"
         width="370px"
       />
