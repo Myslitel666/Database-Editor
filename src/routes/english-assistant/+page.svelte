@@ -41,6 +41,7 @@
     specialWord.value = clearUselessSpaces(specialWord.value);
     specialWord.translate = clearUselessSpaces(specialWord.translate);
     specialWord.level = clearUselessSpaces(specialWord.level);
+    specialWord.example_use = clearUselessSpaces(specialWord.example_use);
     subjectWord = clearUselessSpaces(subjectWord);
 
     if (specialWord.value && specialWord.translate && subjectWord) {
@@ -68,6 +69,7 @@
     specialWord.value = clearUselessSpaces(specialWord.value);
     specialWord.translate = clearUselessSpaces(specialWord.translate);
     specialWord.level = clearUselessSpaces(specialWord.level);
+    specialWord.example_use = clearUselessSpaces(specialWord.example_use);
     updateValue = clearUselessSpaces(updateValue);
     subjectWord = clearUselessSpaces(subjectWord);
 
@@ -275,8 +277,8 @@
         bind:value={specialWord.translate}
         oninput={(e) => {
           const symbol = e.data;
-          const errorSymbols = "qwertyuiop[]asdfghjkl;'zxcvbnm,.";
-          const rightSymbols = "йцукенгшщзхъфывапролджэячсмитьбю";
+          const errorSymbols = "qwertyuiop[]asdfghjkl;'zxcvbnm,.`";
+          const rightSymbols = "йцукенгшщзхъфывапролджэячсмитьбюё";
 
           const index = errorSymbols.indexOf(symbol); // <- индекс символа
 
@@ -288,7 +290,23 @@
         label="Translate"
         width="370px"
       />
-      <TextField bind:value={specialWord.level} label="Level" width="370px" />
+      <TextField
+        bind:value={specialWord.level}
+        label="Level"
+        oninput={(e) => {
+          const symbol = e.data;
+          const errorSymbols = "йцукенгшщзфывапролдячсмить";
+          const rightSymbols = "qwertyuiopasdfghjklzxcvbnm";
+
+          const index = errorSymbols.indexOf(symbol); // <- индекс символа
+
+          if (index !== -1) {
+            specialWord.level =
+              specialWord.level.slice(0, -1) + rightSymbols[index];
+          }
+        }}
+        width="370px"
+      />
       <p>Example of Use:</p>
       <TextArea
         bind:value={specialWord.example_use}
