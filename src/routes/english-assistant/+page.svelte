@@ -13,7 +13,7 @@
     value: "",
     translate: "",
     example_use: "",
-    level: "B",
+    level: "D",
   };
 
   let feedbackTimer = null;
@@ -146,7 +146,7 @@
   }
 
   function toggleWordForm() {
-    specialWord = { value: "", translate: "", example_use: "", level: "B" };
+    specialWord = { value: "", translate: "", example_use: "", level: "D" };
     updateValue = "";
   }
 
@@ -300,6 +300,7 @@
         label="Level"
         oninput={(e) => {
           specialWord.level = rusToEng(specialWord.level, e);
+          specialWord.level = specialWord.level.slice(1);
         }}
         width="370px"
       />
