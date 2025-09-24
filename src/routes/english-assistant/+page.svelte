@@ -300,7 +300,8 @@
         label="Level"
         oninput={(e) => {
           specialWord.level = rusToEng(specialWord.level, e);
-          specialWord.level = specialWord.level.slice(1);
+          if (specialWord.level.length > 1)
+            specialWord.level = specialWord.level.slice(1);
         }}
         width="370px"
       />
