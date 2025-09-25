@@ -222,7 +222,27 @@
     return str.trim().replace(/\s+/g, " ");
   }
 
+  async function downloadBackup() {
+    const data = await fetch.getDatabase();
+
+    // создаём Blob из JSON
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
+
+    // создаём ссылку и кликаем по ней
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "english-assistant.json"; // имя файла
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   onMount(async () => {
+    const test = await fetch.getDatabase();
+    console.log(test);
+
     subjects = await fetch.getSubjects();
     subjectWord = subjects.includes("React") ? "React" : subjects[0];
     specialWords = await fetch.getSpecialWords(subjectWord);
@@ -447,6 +467,13 @@
       DELETE SUBJECT
     </Button>
   {/if}
+  <h2 style:margin="0" style:margin-top="30px">Export the Database</h2>
+  <Button
+    marginTop="7px"
+    marginBottom="7px"
+    width="370px"
+    onclick={downloadBackup}>Download</Button
+  >
 </div>
 
 <style>

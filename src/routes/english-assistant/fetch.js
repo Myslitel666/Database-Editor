@@ -1,3 +1,10 @@
+export async function getDatabase() {
+  const response = await fetch("/api/english-assistant/export");
+
+  const data = await response.json();
+  return data.data; // здесь { subjects: [...], special_words: [...] }
+}
+
 export async function getSpecialWords(sub) {
     const response = await fetch(`/api/english-assistant/special-words?subject=${sub}`, {
       method: "GET",
