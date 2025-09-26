@@ -1,4 +1,4 @@
-import englishAssistantPool from "../../pool";
+import {webDatabasePool as englishAssistantPool} from "../../pool";
 
 // POST /api/query
 export async function POST({ request }) {

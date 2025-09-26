@@ -6,4 +6,9 @@ const englishAssistantPool = new Pool({
     ssl: false
 });
 
+export const webDatabasePool = new Pool({
+    connectionString: process.env.WEB_DATABASE,
+    ssl: false
+});
+
 export default englishAssistantPool;

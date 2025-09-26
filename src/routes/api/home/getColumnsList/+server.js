@@ -1,4 +1,4 @@
-import englishAssistantPool from "../../pool";
+import {webDatabasePool as englishAssistantPool} from "../../pool";
 
 export async function GET({ url }) {
     // Получаем значение параметра `table` из URL
