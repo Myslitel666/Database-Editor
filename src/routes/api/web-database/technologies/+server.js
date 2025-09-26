@@ -57,7 +57,7 @@ export async function PUT({ request }) {
        logo = $4
        WHERE name = $1
        RETURNING *;`,
-      [newname, name, description, logo]
+      [name, newname, description, logo]
     );
 
     return new Response(JSON.stringify({

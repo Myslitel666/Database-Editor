@@ -50,6 +50,8 @@ export async function deleteTechnology(name) {
 }
 
 export async function updateTechnology(technology, updatename) {
+  console.log(technology)
+  console.log('updatename: ' + updatename)
     const response = await fetch("/api/web-database/technologies", {
       method: "PUT",
       headers: {

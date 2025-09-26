@@ -331,7 +331,7 @@
               showMessage(false, "The technology updated successfully");
 
               fetch
-                .updateTechnology(updateTechnologyCopy, technologyCopy)
+                .updateTechnology(technologyCopy, updateTechnologyCopy)
                 .then(() => getTechnologies());
             }
           } else {
@@ -494,7 +494,6 @@
 <style>
   .message {
     position: absolute;
-    bottom: 0;
     left: 0;
     margin-bottom: -40px;
   }
