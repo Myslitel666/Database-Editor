@@ -66,6 +66,19 @@
   });
 </script>
 
+<div style:display="flex" style:flex-direction="column" style:gap="5px">
+  <a
+    style:text-decoration="none"
+    style:color={$themeStore.palette.primary}
+    href="/english-assistant">English Assistant</a
+  >
+  <a
+    style:text-decoration="none"
+    style:color={$themeStore.palette.primary}
+    href="/web-database">WEB Database</a
+  >
+</div>
+
 <div class="content" style:padding-right={xMobileDevice ? "1rem" : ""}>
   {#if !$xMobile || !$selectedTable}
     <DatabaseExplorer width={$xMobile ? "100%" : "16rem"} />
