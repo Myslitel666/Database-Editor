@@ -2,12 +2,12 @@ import {webDatabasePool} from "../../pool";
 
 export async function GET() {
     const result = await webDatabasePool.query(
-      "SELECT title, description, logo FROM Technologies"
+      "SELECT name, description, logo FROM Technologies"
     );
 
     return new Response(JSON.stringify({
       success: true,
-      subjects: result.rows
+      technologies: result.rows
     }), {
       headers: { "Content-Type": "application/json" },
       status: 200
@@ -15,11 +15,11 @@ export async function GET() {
 }
 
 export async function POST({ request }) {
-    const { title, description, logo } = await request.json();
+    const { name, description, logo } = await request.json();
         // Вставляем данные и возвращаем созданную запись
         const result = await webDatabasePool.query(
-            'INSERT INTO Technologies (Title, Description, Logo) VALUES ($1, $2, $3) RETURNING *',
-            [title, description, logo]
+            'INSERT INTO Technologies (name, Description, Logo) VALUES ($1, $2, $3) RETURNING *',
+            [name, description, logo]
         );
 
         return new Response(JSON.stringify({
@@ -32,13 +32,13 @@ export async function POST({ request }) {
 }
 
 export async function DELETE({ request }) {
-  const { title } = await request.json();
+  const { name } = await request.json();
 
   const result = await webDatabasePool.query(`
     DELETE FROM Technologies
-        WHERE title = $1
+        WHERE name = $1
         RETURNING *;`, 
-    [title]
+    [name]
   );
 
   return new Response(JSON.stringify({
@@ -48,16 +48,16 @@ export async function DELETE({ request }) {
 }
 
 export async function PUT({ request }) {
-  const { title, newTitle, description, logo } = await request.json();
+  const { name, newname, description, logo } = await request.json();
 
     const result = await webDatabasePool.query(
       `UPDATE Technologies
-       SET title = $2,
+       SET name = $2,
        description = $3,
        logo = $4
-       WHERE title = $1
+       WHERE name = $1
        RETURNING *;`,
-      [newTitle, title, description, logo]
+      [newname, name, description, logo]
     );
 
     return new Response(JSON.stringify({

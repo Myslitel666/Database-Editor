@@ -14,7 +14,7 @@ export async function getTechnologies() {
     });
 
     const data = await response.json();
-    return data.special_words;
+    return data.technologies;
 }
 
 export async function createTechnology(technology) {
@@ -24,7 +24,7 @@ export async function createTechnology(technology) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        title: technology.title,
+        name: technology.name,
         description: technology.description,
         logo: technology.logo
       }),
@@ -34,14 +34,14 @@ export async function createTechnology(technology) {
     return data;
 }
 
-export async function deleteTechnology(title) {
+export async function deleteTechnology(name) {
     const response = await fetch("/api/web-database/technologies", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        title: title,
+        name: name,
       }),
     });
 
@@ -49,17 +49,17 @@ export async function deleteTechnology(title) {
     return data;
 }
 
-export async function updateTechnology(technology, updateTitle) {
+export async function updateTechnology(technology, updatename) {
     const response = await fetch("/api/web-database/technologies", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        title: updateTitle,
+        name: updatename,
         description: technology.description,
         logo: technology.logo,
-        newTitle: technology.title,
+        newname: technology.name,
       }),
     });
 

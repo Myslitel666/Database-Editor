@@ -21,20 +21,24 @@
   let isVisibleFeedback = false;
   let isErrorFeedback = false;
   let subjectWord = "";
-  let subject = "";
+  let technology = {
+    name: "",
+    description: "",
+    logo: "",
+  };
   let updateValue = "";
-  let updateSubject = "";
+  let updateTechnology = "";
   let wordAction = "Create";
   let subjectAction = "Create";
-  let subjects;
+  let technologies;
   let specialWords;
 
-  async function getSpecialWords() {
-    specialWords = await fetch.getSpecialWords(subjectWord);
-  }
+  // async function getSpecialWords() {
+  //   specialWords = await fetch.getSpecialWords(subjectWord);
+  // }
 
-  async function getSubjects() {
-    subjects = await fetch.getSubjects();
+  async function getTechnologies() {
+    technologies = await fetch.getTechnologies();
   }
 
   function handleAddingWord() {
@@ -45,21 +49,20 @@
     subjectWord = clearUselessSpaces(subjectWord);
 
     if (specialWord.value && specialWord.translate && subjectWord) {
-      if (specialWords.map((s) => s.value).includes(specialWord.value)) {
-        showMessage(
-          true,
-          "Such the Special Word is already in this dictionary"
-        );
-      } else {
-        const specialWordCopy = { ...specialWord };
-        const subjectWordCopy = subjectWord;
-        toggleWordForm();
-        showMessage(false, "The special word added successfully");
-
-        fetch
-          .createSpecialWord(specialWordCopy, subjectWordCopy)
-          .then(() => getSpecialWords());
-      }
+      // if (specialWords.map((s) => s.value).includes(specialWord.value)) {
+      //   showMessage(
+      //     true,
+      //     "Such the Special Word is already in this dictionary"
+      //   );
+      // } else {
+      //   const specialWordCopy = { ...specialWord };
+      //   const subjectWordCopy = subjectWord;
+      //   toggleWordForm();
+      //   showMessage(false, "The special word added successfully");
+      //   // fetch
+      //   //   .createSpecialWord(specialWordCopy, subjectWordCopy)
+      //   //   .then(() => getSpecialWords());
+      // }
     } else {
       showMessage(true, "Fill in all the fields");
     }
@@ -73,42 +76,42 @@
     updateValue = clearUselessSpaces(updateValue);
     subjectWord = clearUselessSpaces(subjectWord);
 
-    if (
-      specialWord.value &&
-      specialWord.translate &&
-      updateValue &&
-      subjectWord
-    ) {
-      if (specialWords.map((s) => s.value).includes(updateValue)) {
-        if (
-          specialWords.map((s) => s.value).includes(specialWord.value) &&
-          updateValue !== specialWord.value
-        ) {
-          showMessage(
-            true,
-            "Such the Special Word is already in this dictionary"
-          );
-        } else {
-          const specialWordCopy = { ...specialWord };
-          const updateValueCopy = updateValue;
-          const subjectWordCopy = subjectWord;
-          toggleWordForm();
-          showMessage(false, "The special word updated successfully");
+    // if (
+    //   specialWord.value &&
+    //   specialWord.translate &&
+    //   updateValue &&
+    //   subjectWord
+    // ) {
+    //   if (specialWords.map((s) => s.value).includes(updateValue)) {
+    //     if (
+    //       specialWords.map((s) => s.value).includes(specialWord.value) &&
+    //       updateValue !== specialWord.value
+    //     ) {
+    //       showMessage(
+    //         true,
+    //         "Such the Special Word is already in this dictionary"
+    //       );
+    //     } else {
+    //       const specialWordCopy = { ...specialWord };
+    //       const updateValueCopy = updateValue;
+    //       const subjectWordCopy = subjectWord;
+    //       toggleWordForm();
+    //       showMessage(false, "The special word updated successfully");
 
-          fetch
-            .updateSpecialWord(
-              specialWordCopy,
-              updateValueCopy,
-              subjectWordCopy
-            )
-            .then(() => getSpecialWords());
-        }
-      } else {
-        showMessage(true, "The Special Word you are editing is missing");
-      }
-    } else {
-      showMessage(true, "Fill in all the fields");
-    }
+    //       // fetch
+    //       //   .updateSpecialWord(
+    //       //     specialWordCopy,
+    //       //     updateValueCopy,
+    //       //     subjectWordCopy
+    //       //   )
+    //       //   .then(() => getSpecialWords());
+    //     }
+    //   } else {
+    //     showMessage(true, "The Special Word you are editing is missing");
+    //   }
+    // } else {
+    //   showMessage(true, "Fill in all the fields");
+    // }
   }
 
   function handleDeletingWord() {
@@ -116,17 +119,17 @@
     subjectWord = clearUselessSpaces(subjectWord);
 
     if (updateValue && subjectWord) {
-      if (specialWords.map((s) => s.value).includes(updateValue)) {
-        const updateValueCopy = updateValue;
-        const subjectWordCopy = subjectWord;
-        toggleWordForm();
-        showMessage(false, "The special word deleted successfully");
-        fetch
-          .deleteSpecialWord(updateValueCopy, subjectWordCopy)
-          .then(() => getSpecialWords());
-      } else {
-        showMessage(true, "The Special Word you are deleting is missing");
-      }
+      // if (specialWords.map((s) => s.value).includes(updateValue)) {
+      //   const updateValueCopy = updateValue;
+      //   const subjectWordCopy = subjectWord;
+      //   toggleWordForm();
+      //   showMessage(false, "The special word deleted successfully");
+      //   // fetch
+      //   //   .deleteSpecialWord(updateValueCopy, subjectWordCopy)
+      //   //   .then(() => getSpecialWords());
+      // } else {
+      //   showMessage(true, "The Special Word you are deleting is missing");
+      // }
     } else {
       showMessage(true, "Fill in all the fields");
     }
@@ -151,8 +154,12 @@
   }
 
   function toggleSubjectForm() {
-    subject = "";
-    updateSubject = "";
+    technology = {
+      name: "",
+      description: "",
+      logo: "",
+    };
+    updateTechnology = "";
   }
 
   function showMessage(isError, message) {
@@ -209,13 +216,13 @@
   }
 
   $: if (subjectWord) {
-    getSpecialWords();
+    //getSpecialWords();
     toggleWordForm();
   }
 
   $: if (updateValue) {
-    const updateWord = specialWords.find((s) => s.value === updateValue);
-    if (updateWord) specialWord = { ...updateWord }; // данные с бэка
+    //const updateWord = specialWords.find((s) => s.value === updateValue);
+    //if (updateWord) specialWord = { ...updateWord }; // данные с бэка
   }
 
   function clearUselessSpaces(str) {
@@ -241,21 +248,138 @@
 
   onMount(async () => {
     const test = await fetch.getDatabase();
-    console.log(test);
+    //console.log(test);
 
-    subjects = await fetch.getSubjects();
-    subjectWord = subjects.includes("React") ? "React" : subjects[0];
-    specialWords = await fetch.getSpecialWords(subjectWord);
+    technologies = await fetch.getTechnologies();
+    console.log("get technologies");
+    console.log(technologies);
+    //subjectWord = subjects.includes("React") ? "React" : subjects[0];
+    //specialWords = await fetch.getSpecialWords(subjectWord);
   });
 </script>
 
 <div class="page gap">
+  <h2 style:margin="0">Technology Form</h2>
+  <AutoComplete
+    options={["Create", "Update", "Delete"]}
+    bind:value={subjectAction}
+    label="Action"
+    width="370px"
+  />
+  {#if subjectAction !== "Create"}
+    <AutoComplete
+      bind:value={updateTechnology}
+      label="Editing name"
+      width="370px"
+      options={technologies.map((t) => t.name)}
+    />
+  {/if}
+  {#if subjectAction !== "Delete"}
+    <TextField bind:value={technology.name} label="name" width="370px" />
+  {/if}
+  {#if subjectAction === "Create"}
+    <Button
+      marginBottom="7px"
+      width="370px"
+      onClick={() => {
+        //technology = clearUselessSpaces(technology.name);
+
+        if (technology.name) {
+          if (
+            technologies &&
+            technologies.map((t) => t.name).includes(technology.name)
+          ) {
+            showMessage(
+              true,
+              "The technology with that name has already been created"
+            );
+          } else {
+            const technologyCopy = technology;
+            toggleSubjectForm();
+            showMessage(false, "The technology added successfully");
+
+            fetch
+              .createTechnology(technologyCopy)
+              .then(() => getTechnologies());
+          }
+        } else {
+          showMessage(true, "Fill in all the fields");
+        }
+      }}
+    >
+      ADD TECHNOLOGY
+    </Button>
+  {:else if subjectAction === "Update"}
+    <Button
+      marginBottom="7px"
+      width="370px"
+      onClick={() => {
+        updateTechnology = clearUselessSpaces(updateTechnology);
+        technology.name = clearUselessSpaces(technology.name);
+
+        if (updateTechnology && technology.name) {
+          if (technologies.map((t) => t.name).includes(updateTechnology)) {
+            if (technologies.map((t) => t.name).includes(technology.name)) {
+              showMessage(
+                true,
+                "The technology with that name has already been created"
+              );
+            } else {
+              const updateTechnologyCopy = updateTechnology;
+              const technologyCopy = technology;
+              toggleSubjectForm();
+              showMessage(false, "The technology updated successfully");
+
+              fetch
+                .updateTechnology(updateTechnologyCopy, technologyCopy)
+                .then(() => getTechnologies());
+            }
+          } else {
+            showMessage(true, "The technology you are editing is missing.");
+          }
+        } else {
+          showMessage(true, "Fill in all the fields");
+        }
+      }}
+    >
+      UPDATE SUBJECT
+    </Button>
+  {:else}
+    <Button
+      marginBottom="7px"
+      variant="Outlined"
+      borderColor="red"
+      color="red"
+      bgColorHover="rgba(255,0,0,0.12)"
+      width="370px"
+      onClick={() => {
+        updateTechnology = clearUselessSpaces(updateTechnology);
+
+        if (updateTechnology) {
+          if (technologies.map((t) => t.name).includes(updateTechnology)) {
+            const updateTechnologyCopy = updateTechnology;
+            toggleSubjectForm();
+            showMessage(false, "The technology deleted successfully");
+            fetch
+              .deleteTechnology(updateTechnologyCopy)
+              .then(() => getTechnologies());
+          } else {
+            showMessage(true, "The technology you are deleting is missing.");
+          }
+        } else {
+          showMessage(true, "Fill in all the fields");
+        }
+      }}
+    >
+      DELETE SUBJECT
+    </Button>
+  {/if}
   <div
     class="special-words gap"
     style:position="relative"
     on:keydown={(e) => handleEnter(e)}
   >
-    <h2 style:margin="0">Special Words Form</h2>
+    <h2 style:margin="0" style:margin-top="29px">Special Words Form</h2>
     <div class="special-words-block gap">
       <AutoComplete
         options={["Create", "Update", "Delete"]}
@@ -264,7 +388,7 @@
         width="181px"
       />
       <AutoComplete
-        options={subjects}
+        options={technologies}
         bind:value={subjectWord}
         label="Subject"
         width="182px"
@@ -272,7 +396,6 @@
     </div>
     {#if wordAction !== "Create"}
       <AutoComplete
-        options={specialWords.map((s) => s.value)}
         bind:value={updateValue}
         oninput={(e) => {
           const symbol = e.data;
@@ -359,114 +482,6 @@
       </Message>
     </div>
   </div>
-  <h2 style:margin="0" style:margin-top="29px">Subject Form</h2>
-  <AutoComplete
-    options={["Create", "Update", "Delete"]}
-    bind:value={subjectAction}
-    label="Action"
-    width="370px"
-  />
-  {#if subjectAction !== "Create"}
-    <AutoComplete
-      bind:value={updateSubject}
-      label="Editing Subject"
-      width="370px"
-      options={subjects}
-    />
-  {/if}
-  {#if subjectAction !== "Delete"}
-    <TextField bind:value={subject} label="Subject" width="370px" />
-  {/if}
-  {#if subjectAction === "Create"}
-    <Button
-      marginBottom="7px"
-      width="370px"
-      onClick={() => {
-        subject = clearUselessSpaces(subject);
-
-        if (subject) {
-          if (subjects.includes(subject)) {
-            showMessage(
-              true,
-              "The subject with that name has already been created"
-            );
-          } else {
-            const subjectCopy = subject;
-            toggleSubjectForm();
-            showMessage(false, "The subject added successfully");
-
-            fetch.createSubject(subjectCopy).then(() => getSubjects());
-          }
-        } else {
-          showMessage(true, "Fill in all the fields");
-        }
-      }}
-    >
-      ADD SUBJECT
-    </Button>
-  {:else if subjectAction === "Update"}
-    <Button
-      marginBottom="7px"
-      width="370px"
-      onClick={() => {
-        updateSubject = clearUselessSpaces(updateSubject);
-        subject = clearUselessSpaces(subject);
-
-        if (updateSubject && subject) {
-          if (subjects.includes(updateSubject)) {
-            if (subjects.includes(subject)) {
-              showMessage(
-                true,
-                "The subject with that name has already been created"
-              );
-            } else {
-              const updateSubjectCopy = updateSubject;
-              const subjectCopy = subject;
-              toggleSubjectForm();
-              showMessage(false, "The subject updated successfully");
-
-              fetch
-                .updateSubject(updateSubjectCopy, subjectCopy)
-                .then(() => getSubjects());
-            }
-          } else {
-            showMessage(true, "The subject you are editing is missing.");
-          }
-        } else {
-          showMessage(true, "Fill in all the fields");
-        }
-      }}
-    >
-      UPDATE SUBJECT
-    </Button>
-  {:else}
-    <Button
-      marginBottom="7px"
-      variant="Outlined"
-      borderColor="red"
-      color="red"
-      bgColorHover="rgba(255,0,0,0.12)"
-      width="370px"
-      onClick={() => {
-        updateSubject = clearUselessSpaces(updateSubject);
-
-        if (updateSubject) {
-          if (subjects.includes(updateSubject)) {
-            const updateSubjectCopy = updateSubject;
-            toggleSubjectForm();
-            showMessage(false, "The subject deleted successfully");
-            fetch.deleteSubject(updateSubjectCopy).then(() => getSubjects());
-          } else {
-            showMessage(true, "The subject you are deleting is missing.");
-          }
-        } else {
-          showMessage(true, "Fill in all the fields");
-        }
-      }}
-    >
-      DELETE SUBJECT
-    </Button>
-  {/if}
   <h2 style:margin="0" style:margin-top="30px">Export the Database</h2>
   <Button
     marginTop="7px"
