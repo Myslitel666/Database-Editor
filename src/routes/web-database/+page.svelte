@@ -16,16 +16,17 @@
     level: "D",
   };
 
-  let feedbackTimer = null;
-  let messageFeedback = "";
-  let isVisibleFeedback = false;
-  let isErrorFeedback = false;
-  let subjectWord = "";
   let technology = {
     name: "",
     description: "",
     logo: "",
   };
+
+  let feedbackTimer = null;
+  let messageFeedback = "";
+  let isVisibleFeedback = false;
+  let isErrorFeedback = false;
+  let subjectWord = "";
   let updateValue = "";
   let updateTechnology = "";
   let wordAction = "Create";
@@ -220,9 +221,11 @@
     toggleWordForm();
   }
 
-  $: if (updateValue) {
-    //const updateWord = specialWords.find((s) => s.value === updateValue);
-    //if (updateWord) specialWord = { ...updateWord }; // данные с бэка
+  $: if (updateTechnology) {
+    const upTechnologyObj = technologies.find(
+      (s) => s.name === updateTechnology
+    );
+    if (upTechnologyObj) technology = { ...upTechnologyObj }; // данные с бэка
   }
 
   function clearUselessSpaces(str) {
@@ -269,13 +272,19 @@
   {#if subjectAction !== "Create"}
     <AutoComplete
       bind:value={updateTechnology}
-      label="Editing name"
+      label="Editing Name"
       width="370px"
       options={technologies.map((t) => t.name)}
     />
   {/if}
   {#if subjectAction !== "Delete"}
-    <TextField bind:value={technology.name} label="name" width="370px" />
+    <TextField bind:value={technology.name} label="Name" width="370px" />
+    <TextField
+      bind:value={technology.description}
+      label="Description"
+      width="370px"
+    />
+    <TextField bind:value={technology.logo} label="Logo" width="370px" />
   {/if}
   {#if subjectAction === "Create"}
     <Button
@@ -319,7 +328,10 @@
 
         if (updateTechnology && technology.name) {
           if (technologies.map((t) => t.name).includes(updateTechnology)) {
-            if (technologies.map((t) => t.name).includes(technology.name)) {
+            if (
+              technologies.map((t) => t.name).includes(technology.name) &&
+              updateTechnology !== technology.name
+            ) {
               showMessage(
                 true,
                 "The technology with that name has already been created"
