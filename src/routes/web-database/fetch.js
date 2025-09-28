@@ -26,7 +26,8 @@ export async function createTechnology(technology) {
       body: JSON.stringify({
         name: technology.name,
         description: technology.description,
-        logo: technology.logo
+        logo: technology.logo,
+        data_source: technology.data_source,
       }),
     });
 
@@ -61,6 +62,7 @@ export async function updateTechnology(technology, updatename) {
         name: updatename,
         description: technology.description,
         logo: technology.logo,
+        data_source: technology.data_source,
         newname: technology.name,
       }),
     });

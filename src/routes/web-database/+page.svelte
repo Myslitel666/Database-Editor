@@ -20,6 +20,7 @@
     name: "",
     description: "",
     logo: "",
+    data_source: "",
   };
 
   let feedbackTimer = null;
@@ -159,6 +160,7 @@
       name: "",
       description: "",
       logo: "",
+      data_source: "",
     };
     updateTechnology = "";
   }
@@ -285,6 +287,11 @@
       width="370px"
     />
     <TextField bind:value={technology.logo} label="Logo" width="370px" />
+    <TextField
+      bind:value={technology.data_source}
+      label="Data Source"
+      width="370px"
+    />
   {/if}
   {#if subjectAction === "Create"}
     <Button

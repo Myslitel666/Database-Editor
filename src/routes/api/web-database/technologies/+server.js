@@ -2,7 +2,7 @@ import {webDatabasePool} from "../../pool";
 
 export async function GET() {
     const result = await webDatabasePool.query(
-      "SELECT name, description, logo FROM Technologies"
+      "SELECT name, description, logo, data_source FROM Technologies"
     );
 
     return new Response(JSON.stringify({
@@ -15,11 +15,11 @@ export async function GET() {
 }
 
 export async function POST({ request }) {
-    const { name, description, logo } = await request.json();
+    const { name, description, logo, data_source } = await request.json();
         // Вставляем данные и возвращаем созданную запись
         const result = await webDatabasePool.query(
-            'INSERT INTO Technologies (name, Description, Logo) VALUES ($1, $2, $3) RETURNING *',
-            [name, description, logo]
+            'INSERT INTO Technologies (name, Description, Logo, data_source) VALUES ($1, $2, $3, $4) RETURNING *',
+            [name, description, logo, data_source]
         );
 
         return new Response(JSON.stringify({
@@ -48,16 +48,17 @@ export async function DELETE({ request }) {
 }
 
 export async function PUT({ request }) {
-  const { name, newname, description, logo } = await request.json();
+  const { name, newname, description, logo, data_source } = await request.json();
 
     const result = await webDatabasePool.query(
       `UPDATE Technologies
        SET name = $2,
        description = $3,
-       logo = $4
+       logo = $4,
+       data_source = $5
        WHERE name = $1
        RETURNING *;`,
-      [name, newname, description, logo]
+      [name, newname, description, logo, data_source]
     );
 
     return new Response(JSON.stringify({
