@@ -17,6 +17,18 @@ export async function getTechnologies() {
     return data.technologies;
 }
 
+export async function getSections() {
+    const response = await fetch(`/api/web-database/sections`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+
+    const data = await response.json();
+    return data.sections;
+}
+
 export async function createTechnology(technology) {
     const response = await fetch("/api/web-database/technologies", {
       method: "POST",
@@ -35,14 +47,16 @@ export async function createTechnology(technology) {
     return data;
 }
 
-export async function deleteTechnology(name) {
-    const response = await fetch("/api/web-database/technologies", {
-      method: "DELETE",
+export async function createSection(technologyName, section) {
+    const response = await fetch("/api/web-database/sections", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: name,
+        title: section.title,
+        position: section.position,
+        technologyName: technologyName
       }),
     });
 
@@ -50,20 +64,33 @@ export async function deleteTechnology(name) {
     return data;
 }
 
-export async function updateTechnology(technology, updatename) {
-  console.log(technology)
-  console.log('updatename: ' + updatename)
-    const response = await fetch("/api/web-database/technologies", {
+export async function deleteSection(technologyName, title) {
+    const response = await fetch("/api/web-database/sections", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: title,
+        technologyName: technologyName,
+      }),
+    });
+
+    const data = await response.json();
+    return data;
+}
+
+export async function updateSection(technologyName, sectionTitle, section) {
+    const response = await fetch("/api/web-database/sections", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: updatename,
-        description: technology.description,
-        logo: technology.logo,
-        data_source: technology.data_source,
-        newname: technology.name,
+        technologyName: technologyName,
+        title: sectionTitle,
+        newTitle: section.title,
+        position: section.position,
       }),
     });
 
