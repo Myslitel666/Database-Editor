@@ -9,11 +9,9 @@
   import { onMount } from "svelte";
   import * as fetch from "./fetch";
 
-  let specialWord = {
-    value: "",
-    translate: "",
-    example_use: "",
-    level: "D",
+  let section = {
+    title: "",
+    position: "",
   };
 
   let technology = {
@@ -27,15 +25,15 @@
   let messageFeedback = "";
   let isVisibleFeedback = false;
   let isErrorFeedback = false;
-  let subjectWord = "";
-  let updateValue = "";
+  let sectionTecnology = "";
+  let updateSectionTitle = "";
   let updateTechnology = "";
-  let wordAction = "Create";
+  let sectionAction = "Create";
   let subjectAction = "Create";
   let technologies;
-  let specialWords;
+  let sections;
 
-  // async function getSpecialWords() {
+  // async function getSections() {
   //   specialWords = await fetch.getSpecialWords(subjectWord);
   // }
 
@@ -43,14 +41,14 @@
     technologies = await fetch.getTechnologies();
   }
 
-  function handleAddingWord() {
-    specialWord.value = clearUselessSpaces(specialWord.value);
-    specialWord.translate = clearUselessSpaces(specialWord.translate);
-    specialWord.level = clearUselessSpaces(specialWord.level);
-    specialWord.example_use = clearUselessSpaces(specialWord.example_use);
-    subjectWord = clearUselessSpaces(subjectWord);
+  function handleAddingSection() {
+    section.value = clearUselessSpaces(section.value);
+    section.translate = clearUselessSpaces(section.translate);
+    section.level = clearUselessSpaces(section.level);
+    section.example_use = clearUselessSpaces(section.example_use);
+    sectionTecnology = clearUselessSpaces(sectionTecnology);
 
-    if (specialWord.value && specialWord.translate && subjectWord) {
+    if (section.value && section.translate && sectionTecnology) {
       // if (specialWords.map((s) => s.value).includes(specialWord.value)) {
       //   showMessage(
       //     true,
@@ -70,13 +68,13 @@
     }
   }
 
-  function handleUpdatingWord() {
-    specialWord.value = clearUselessSpaces(specialWord.value);
-    specialWord.translate = clearUselessSpaces(specialWord.translate);
-    specialWord.level = clearUselessSpaces(specialWord.level);
-    specialWord.example_use = clearUselessSpaces(specialWord.example_use);
-    updateValue = clearUselessSpaces(updateValue);
-    subjectWord = clearUselessSpaces(subjectWord);
+  function handleUpdatingSection() {
+    section.value = clearUselessSpaces(section.value);
+    section.translate = clearUselessSpaces(section.translate);
+    section.level = clearUselessSpaces(section.level);
+    section.example_use = clearUselessSpaces(section.example_use);
+    updateSectionTitle = clearUselessSpaces(updateSectionTitle);
+    sectionTecnology = clearUselessSpaces(sectionTecnology);
 
     // if (
     //   specialWord.value &&
@@ -116,11 +114,11 @@
     // }
   }
 
-  function handleDeletingWord() {
-    updateValue = clearUselessSpaces(updateValue);
-    subjectWord = clearUselessSpaces(subjectWord);
+  function handleDeletingSection() {
+    updateSectionTitle = clearUselessSpaces(updateSectionTitle);
+    sectionTecnology = clearUselessSpaces(sectionTecnology);
 
-    if (updateValue && subjectWord) {
+    if (updateSectionTitle && sectionTecnology) {
       // if (specialWords.map((s) => s.value).includes(updateValue)) {
       //   const updateValueCopy = updateValue;
       //   const subjectWordCopy = subjectWord;
@@ -140,19 +138,19 @@
   function handleEnter(e) {
     if (e.key === "Enter") {
       e.preventDefault(); // чтобы не срабатывал submit по умолчанию
-      if (wordAction === "Create") {
-        handleAddingWord();
-      } else if (wordAction === "Update") {
-        handleUpdatingWord();
-      } else if (wordAction === "Delete") {
-        handleDeletingWord();
+      if (sectionAction === "Create") {
+        handleAddingSection();
+      } else if (sectionAction === "Update") {
+        handleUpdatingSection();
+      } else if (sectionAction === "Delete") {
+        handleDeletingSection();
       }
     }
   }
 
-  function toggleWordForm() {
-    specialWord = { value: "", translate: "", example_use: "", level: "D" };
-    updateValue = "";
+  function toggleSectionForm() {
+    section = { position: "", title: "" };
+    updateSectionTitle = "";
   }
 
   function toggleSubjectForm() {
@@ -198,29 +196,29 @@
     return word;
   }
 
-  $: if (specialWord.value) {
-    specialWord.value = specialWord.value.toLowerCase();
+  $: if (section.value) {
+    section.value = section.value.toLowerCase();
   }
 
-  $: if (specialWord.translate) {
-    specialWord.translate = specialWord.translate.toLowerCase();
+  $: if (section.translate) {
+    section.translate = section.translate.toLowerCase();
   }
 
-  $: if (specialWord.level) {
-    specialWord.level = specialWord.level.toUpperCase();
+  $: if (section.level) {
+    section.level = section.level.toUpperCase();
   }
 
   $: if (subjectAction) {
     toggleSubjectForm();
   }
 
-  $: if (wordAction) {
-    toggleWordForm();
+  $: if (sectionAction) {
+    toggleSectionForm();
   }
 
-  $: if (subjectWord) {
+  $: if (sectionTecnology) {
     //getSpecialWords();
-    toggleWordForm();
+    toggleSectionForm();
   }
 
   $: if (updateTechnology) {
@@ -256,15 +254,71 @@
     //console.log(test);
 
     technologies = await fetch.getTechnologies();
-    console.log("get technologies");
-    console.log(technologies);
     //subjectWord = subjects.includes("React") ? "React" : subjects[0];
     //specialWords = await fetch.getSpecialWords(subjectWord);
   });
 </script>
 
 <div class="page gap">
-  <h2 style:margin="0">Technology Form</h2>
+  <div
+    class="special-words gap"
+    style:position="relative"
+    on:keydown={(e) => handleEnter(e)}
+  >
+    <h2 style:margin="0">Section Form</h2>
+    <div class="special-words-block gap">
+      <AutoComplete
+        options={["Create", "Update", "Delete"]}
+        bind:value={sectionAction}
+        label="Action"
+        width="111px"
+      />
+      <AutoComplete
+        options={technologies ? technologies.map((t) => t.name) : []}
+        bind:value={sectionTecnology}
+        label="Tecnology"
+        width="252px"
+      />
+    </div>
+    {#if sectionAction !== "Create"}
+      <AutoComplete
+        bind:value={updateSectionTitle}
+        label="Editing Section"
+        width="370px"
+      />
+    {/if}
+    {#if sectionAction !== "Delete"}
+      <TextField bind:value={section.value} label="Section" width="370px" />
+      <TextField bind:value={section.position} label="Position" width="370px" />
+    {/if}
+    {#if sectionAction === "Create"}
+      <Button width="370px" onClick={handleAddingSection}>ADD SECTION</Button>
+    {:else if sectionAction === "Update"}
+      <Button width="370px" onClick={handleUpdatingSection}
+        >UPDATE SECTION</Button
+      >
+    {:else}
+      <Button
+        variant="Outlined"
+        borderColor="red"
+        color="red"
+        bgColorHover="rgba(255,0,0,0.12)"
+        width="370px"
+        onClick={handleDeletingSection}
+      >
+        DELETE SECTION
+      </Button>
+    {/if}
+    <div class="message">
+      <Message
+        bind:isVisible={isVisibleFeedback}
+        bind:isError={isErrorFeedback}
+      >
+        {messageFeedback}
+      </Message>
+    </div>
+  </div>
+  <h2 style:margin="0" style:margin-top="29px">Technology Form</h2>
   <AutoComplete
     options={["Create", "Update", "Delete"]}
     bind:value={subjectAction}
@@ -276,7 +330,7 @@
       bind:value={updateTechnology}
       label="Editing Name"
       width="370px"
-      options={technologies.map((t) => t.name)}
+      options={technologies ? technologies.map((t) => t.name) : []}
     />
   {/if}
   {#if subjectAction !== "Delete"}
@@ -361,7 +415,7 @@
         }
       }}
     >
-      UPDATE SUBJECT
+      UPDATE TECHNOLOGY
     </Button>
   {:else}
     <Button
@@ -390,117 +444,9 @@
         }
       }}
     >
-      DELETE SUBJECT
+      DELETE TECHNOLOGY
     </Button>
   {/if}
-  <div
-    class="special-words gap"
-    style:position="relative"
-    on:keydown={(e) => handleEnter(e)}
-  >
-    <h2 style:margin="0" style:margin-top="29px">Special Words Form</h2>
-    <div class="special-words-block gap">
-      <AutoComplete
-        options={["Create", "Update", "Delete"]}
-        bind:value={wordAction}
-        label="Action"
-        width="181px"
-      />
-      <AutoComplete
-        options={technologies}
-        bind:value={subjectWord}
-        label="Subject"
-        width="182px"
-      />
-    </div>
-    {#if wordAction !== "Create"}
-      <AutoComplete
-        bind:value={updateValue}
-        oninput={(e) => {
-          const symbol = e.data;
-          const errorSymbols = "йцукенгшщзфывапролдячсмить";
-          const rightSymbols = "qwertyuiopasdfghjklzxcvbnm";
-
-          const index = errorSymbols.indexOf(symbol); // <- индекс символа
-
-          if (index !== -1) {
-            updateValue = updateValue.slice(0, -1) + rightSymbols[index];
-          }
-        }}
-        label="Editing Value"
-        width="370px"
-      />
-    {/if}
-    {#if wordAction !== "Delete"}
-      <TextField
-        bind:value={specialWord.value}
-        oninput={(e) => {
-          specialWord.value = rusToEng(specialWord.value, e);
-        }}
-        label="Value"
-        width="370px"
-      />
-      <TextField
-        bind:value={specialWord.translate}
-        oninput={(e) => {
-          const symbol = e.data;
-          const errorSymbols = "qwertyuiop[]asdfghjkl;'zxcvbnm,.`";
-          const rightSymbols = "йцукенгшщзхъфывапролджэячсмитьбюё";
-
-          const index = errorSymbols.indexOf(symbol); // <- индекс символа
-
-          if (index !== -1) {
-            specialWord.translate =
-              specialWord.translate.slice(0, -1) + rightSymbols[index];
-          }
-        }}
-        label="Translate"
-        width="370px"
-      />
-      <TextField
-        bind:value={specialWord.level}
-        label="Level"
-        oninput={(e) => {
-          specialWord.level = rusToEng(specialWord.level, e);
-          if (specialWord.level.length > 1)
-            specialWord.level = specialWord.level.slice(1);
-        }}
-        width="370px"
-      />
-      <p>Example of Use:</p>
-      <TextArea
-        bind:value={specialWord.example_use}
-        width="370px"
-        label="Example of Use"
-      />
-    {/if}
-    {#if wordAction === "Create"}
-      <Button width="370px" onClick={handleAddingWord}>ADD SPECIAL WORD</Button>
-    {:else if wordAction === "Update"}
-      <Button width="370px" onClick={handleUpdatingWord}>
-        UPDATE SPECIAL WORD
-      </Button>
-    {:else}
-      <Button
-        variant="Outlined"
-        borderColor="red"
-        color="red"
-        bgColorHover="rgba(255,0,0,0.12)"
-        width="370px"
-        onClick={handleDeletingWord}
-      >
-        DELETE SPECIAL WORD
-      </Button>
-    {/if}
-    <div class="message">
-      <Message
-        bind:isVisible={isVisibleFeedback}
-        bind:isError={isErrorFeedback}
-      >
-        {messageFeedback}
-      </Message>
-    </div>
-  </div>
   <h2 style:margin="0" style:margin-top="30px">Export the Database</h2>
   <Button
     marginTop="7px"
