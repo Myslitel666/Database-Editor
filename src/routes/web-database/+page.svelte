@@ -48,7 +48,7 @@
   function handleAddingSection() {
     section.title = clearUselessSpaces(section.title);
 
-    if (section.title && section.position && selectedTecnology) {
+    if (section.title && selectedTecnology) {
       if (sections.map((s) => s.title).includes(section.title)) {
         showMessage(true, "Such the section is already in this dictionary");
       } else {
@@ -247,7 +247,7 @@
   }
 
   onMount(async () => {
-    const test = await fetch.getDatabase();
+    //const test = await fetch.getDatabase();
     //console.log(test);
 
     technologies = await fetch.getTechnologies();

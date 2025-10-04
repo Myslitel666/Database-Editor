@@ -1,7 +1,7 @@
-import englishAssistantPool from "../../pool";
+import webDatabasePool from "../../pool";
 
 export async function GET() {
-    const result = await englishAssistantPool.query(`
+    const result = await webDatabasePool.query(`
       SELECT json_build_object(
         'subjects', (SELECT json_agg(s) FROM subjects s),
         'special_words', (SELECT json_agg(sw) FROM special_words sw)

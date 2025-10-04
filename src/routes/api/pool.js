@@ -11,4 +11,4 @@ export const webDatabasePool = new Pool({
     ssl: false
 });
 
-export default englishAssistantPool;
+export default webDatabasePool;

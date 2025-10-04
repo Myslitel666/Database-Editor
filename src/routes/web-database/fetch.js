@@ -18,7 +18,6 @@ export async function getTechnologies() {
 }
 
 export async function getSections(technologyName) {
-    
     const response = await fetch(`/api/web-database/sections?technology=${technologyName}`, {
       method: "GET",
       headers: {

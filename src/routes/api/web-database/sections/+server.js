@@ -1,4 +1,4 @@
-import webDatabasePool from "../../pool";
+import {webDatabasePool} from "../../pool";
 
 // GET /api/special-words
 export async function GET({ url }) {
@@ -30,12 +30,11 @@ export async function POST({ request }) {
   const { technologyName, title, position } = await request.json();
     let insertRes;
 
-    if (position == null) {
+    if (position === "") {
+            console.log("Я здесь")
       insertRes = await webDatabasePool.query(
         `INSERT INTO sections (technology_id, title, position)
-         SELECT (SELECT id FROM technology WHERE name = $1), $2, (SELECT COUNT(*) FROM sections s LEFT JOIN technologies t ON s.technology_id = t.id WHERE t.name = $1) + 1
-         FROM sections
-         WHERE technology_id = (SELECT id FROM technology WHERE name = $1)
+         VALUES ((SELECT id FROM technologies WHERE name = $1), $2, (SELECT COUNT(*) FROM sections s LEFT JOIN technologies t ON s.technology_id = t.id WHERE t.name = $1) + 1)
          RETURNING *`,
         [technologyName, title]
       );
@@ -43,13 +42,13 @@ export async function POST({ request }) {
       await webDatabasePool.query(
         `UPDATE sections
          SET position = position + 1
-         WHERE technology_id = (SELECT id FROM technology WHERE name = $1) AND position >= $2`,
+         WHERE technology_id = (SELECT id FROM technologies WHERE name = $1) AND position >= $2`,
         [technologyName, position]
       );
 
       insertRes = await webDatabasePool.query(
         `INSERT INTO sections (technology_id, title, position)
-         VALUES ((SELECT id FROM technology WHERE name = $1), $2, $3)
+         VALUES ((SELECT id FROM technologies WHERE name = $1), $2, $3)
          RETURNING *`,
         [technologyName, title, position]
       );
@@ -67,7 +66,7 @@ export async function DELETE({ request }) {
   const result = await webDatabasePool.query(`
     DELETE FROM sections
         WHERE title = $2
-        AND technology_id = (SELECT id FROM technology WHERE name = $1)
+        AND technology_id = (SELECT id FROM technologies WHERE name = $1)
         RETURNING *;`, 
     [technologyName, title]
   );
@@ -86,7 +85,7 @@ export async function PUT({ request }) {
   const currentRes = await webDatabasePool.query(
     `SELECT position FROM sections
       WHERE title = $1
-        AND technology_id = (SELECT id FROM technology WHERE name = $2)`,
+        AND technology_id = (SELECT id FROM technologies WHERE name = $2)`,
     [title, technologyName]
   );
 
@@ -96,7 +95,7 @@ export async function PUT({ request }) {
   await webDatabasePool.query(
     `UPDATE sections
       SET position = position + 1
-      WHERE technology_id = (SELECT id FROM technology WHERE name = $1)
+      WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
         AND position >= $2`,
     [technologyName, position]
   );
@@ -106,7 +105,7 @@ export async function PUT({ request }) {
     `UPDATE sections
       SET position = $2,
       title = newTitle
-      WHERE technology_id = (SELECT id FROM technology WHERE name = $1)
+      WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
         AND title = $3`,
     [technologyName, position, title, newTitle]
   );
@@ -115,7 +114,7 @@ export async function PUT({ request }) {
   await webDatabasePool.query(
     `UPDATE sections
       SET position = position - 1
-      WHERE technology_id = (SELECT id FROM technology WHERE name = $1)
+      WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
         AND position > $1`,
     [currentPosition]
   );
