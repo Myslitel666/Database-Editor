@@ -17,8 +17,9 @@ export async function getTechnologies() {
     return data.technologies;
 }
 
-export async function getSections() {
-    const response = await fetch(`/api/web-database/sections`, {
+export async function getSections(technologyName) {
+    
+    const response = await fetch(`/api/web-database/sections?technology=${technologyName}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -26,6 +27,7 @@ export async function getSections() {
     });
 
     const data = await response.json();
+    console.log(data)
     return data.sections;
 }
 

@@ -25,7 +25,7 @@
   let messageFeedback = "";
   let isVisibleFeedback = false;
   let isErrorFeedback = false;
-  let sectionTecnology = "";
+  let selectedTecnology = "";
   let updateSectionTitle = "";
   let updateTechnology = "";
   let sectionAction = "Create";
@@ -33,36 +33,33 @@
   let technologies;
   let sections;
 
-  // async function getSections() {
-  //   specialWords = await fetch.getSpecialWords(subjectWord);
-  // }
+  async function getSections() {
+    sections = await fetch.getSections(selectedTecnology);
+  }
 
   async function getTechnologies() {
     technologies = await fetch.getTechnologies();
   }
 
-  function handleAddingSection() {
-    section.value = clearUselessSpaces(section.value);
-    section.translate = clearUselessSpaces(section.translate);
-    section.level = clearUselessSpaces(section.level);
-    section.example_use = clearUselessSpaces(section.example_use);
-    sectionTecnology = clearUselessSpaces(sectionTecnology);
+  $: if (selectedTecnology) {
+    getSections();
+  }
 
-    if (section.value && section.translate && sectionTecnology) {
-      // if (specialWords.map((s) => s.value).includes(specialWord.value)) {
-      //   showMessage(
-      //     true,
-      //     "Such the Special Word is already in this dictionary"
-      //   );
-      // } else {
-      //   const specialWordCopy = { ...specialWord };
-      //   const subjectWordCopy = subjectWord;
-      //   toggleWordForm();
-      //   showMessage(false, "The special word added successfully");
-      //   // fetch
-      //   //   .createSpecialWord(specialWordCopy, subjectWordCopy)
-      //   //   .then(() => getSpecialWords());
-      // }
+  function handleAddingSection() {
+    section.title = clearUselessSpaces(section.title);
+
+    if (section.title && section.position && selectedTecnology) {
+      if (sections.map((s) => s.title).includes(section.title)) {
+        showMessage(true, "Such the section is already in this dictionary");
+      } else {
+        const sectionCopy = { ...section };
+        const selectedTecnologyCopy = selectedTecnology;
+        toggleSectionForm();
+        showMessage(false, "The section added successfully");
+        fetch
+          .createSection(selectedTecnologyCopy, sectionCopy)
+          .then(() => getSections());
+      }
     } else {
       showMessage(true, "Fill in all the fields");
     }
@@ -74,7 +71,7 @@
     section.level = clearUselessSpaces(section.level);
     section.example_use = clearUselessSpaces(section.example_use);
     updateSectionTitle = clearUselessSpaces(updateSectionTitle);
-    sectionTecnology = clearUselessSpaces(sectionTecnology);
+    selectedTecnology = clearUselessSpaces(selectedTecnology);
 
     // if (
     //   specialWord.value &&
@@ -116,9 +113,9 @@
 
   function handleDeletingSection() {
     updateSectionTitle = clearUselessSpaces(updateSectionTitle);
-    sectionTecnology = clearUselessSpaces(sectionTecnology);
+    selectedTecnology = clearUselessSpaces(selectedTecnology);
 
-    if (updateSectionTitle && sectionTecnology) {
+    if (updateSectionTitle && selectedTecnology) {
       // if (specialWords.map((s) => s.value).includes(updateValue)) {
       //   const updateValueCopy = updateValue;
       //   const subjectWordCopy = subjectWord;
@@ -216,7 +213,7 @@
     toggleSectionForm();
   }
 
-  $: if (sectionTecnology) {
+  $: if (selectedTecnology) {
     //getSpecialWords();
     toggleSectionForm();
   }
@@ -275,7 +272,7 @@
       />
       <AutoComplete
         options={technologies ? technologies.map((t) => t.name) : []}
-        bind:value={sectionTecnology}
+        bind:value={selectedTecnology}
         label="Tecnology"
         width="252px"
       />
@@ -288,7 +285,7 @@
       />
     {/if}
     {#if sectionAction !== "Delete"}
-      <TextField bind:value={section.value} label="Section" width="370px" />
+      <TextField bind:value={section.title} label="Section" width="370px" />
       <TextField bind:value={section.position} label="Position" width="370px" />
     {/if}
     {#if sectionAction === "Create"}

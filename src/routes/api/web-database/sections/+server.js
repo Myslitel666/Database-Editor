@@ -10,9 +10,9 @@ export async function GET({ url }) {
       s.title,
       s.position
     FROM sections s
-    LEFT JOIN tecnologies t ON s.technology_id = t.id
+    LEFT JOIN technologies t ON s.technology_id = t.id
     WHERE t.name = $1
-    ORDER BY s.position,
+    ORDER BY s.position
   `;
   
   const result = await webDatabasePool.query(query, params);
