@@ -29,9 +29,26 @@ export async function GET({ url }) {
 export async function POST({ request }) {
   const { technologyName, title, position } = await request.json();
     let insertRes;
+    let finalPosition = Number(position);
 
-    if (position === "") {
-            console.log("Я здесь")
+    const maxPositionResult = await webDatabasePool.query(
+      `SELECT MAX(position) as max_position 
+      FROM sections 
+      WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)`,
+      [technologyName]
+    );
+
+    const maxPosition = maxPositionResult.rows[0]?.max_position;
+
+    if (maxPosition) {
+        if (Number(position) > maxPosition) {
+            finalPosition = maxPosition + 1;
+        }
+    } else {
+        finalPosition = 1;
+    }
+
+    if (finalPosition < 1) {
       insertRes = await webDatabasePool.query(
         `INSERT INTO sections (technology_id, title, position)
          VALUES ((SELECT id FROM technologies WHERE name = $1), $2, (SELECT COUNT(*) FROM sections s LEFT JOIN technologies t ON s.technology_id = t.id WHERE t.name = $1) + 1)
@@ -43,14 +60,14 @@ export async function POST({ request }) {
         `UPDATE sections
          SET position = position + 1
          WHERE technology_id = (SELECT id FROM technologies WHERE name = $1) AND position >= $2`,
-        [technologyName, position]
+        [technologyName, finalPosition]
       );
 
       insertRes = await webDatabasePool.query(
         `INSERT INTO sections (technology_id, title, position)
          VALUES ((SELECT id FROM technologies WHERE name = $1), $2, $3)
          RETURNING *`,
-        [technologyName, title, position]
+        [technologyName, title, finalPosition]
       );
     }
 
