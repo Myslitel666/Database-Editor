@@ -158,9 +158,8 @@ export async function PUT({ request }) {
       WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
          AND (
           (position >= $3 AND $3 < $2::integer) OR  -- если двигаем вниз
-          (position > $2::integer AND $3 > $2::integer)     -- если двигаем вверх
-        )
-        AND position >= $3`,
+          (position > $3::integer AND $3 > $2::integer)     -- если двигаем вверх
+        )`,
     [technologyName, position, curPosition]
   );
 
