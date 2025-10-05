@@ -17,8 +17,8 @@ export async function getTechnologies() {
     return data.technologies;
 }
 
-export async function getSections(technologyName) {
-    const response = await fetch(`/api/web-database/sections?technology=${technologyName}`, {
+export async function getSections(technologyName, sectionType) {
+    const response = await fetch(`/api/web-database/sections?technology=${technologyName}&section-type=${sectionType}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -59,7 +59,7 @@ export async function createTechnology(technology) {
     return data;
 }
 
-export async function createSection(technologyName, section) {
+export async function createSection(technologyName, sectionType, section) {
     const response = await fetch("/api/web-database/sections", {
       method: "POST",
       headers: {
@@ -68,7 +68,8 @@ export async function createSection(technologyName, section) {
       body: JSON.stringify({
         title: section.title,
         position: section.position,
-        technologyName: technologyName
+        technologyName: technologyName,
+        sectionType: sectionType
       }),
     });
 
@@ -76,7 +77,7 @@ export async function createSection(technologyName, section) {
     return data;
 }
 
-export async function deleteSection(technologyName, title) {
+export async function deleteSection(technologyName, sectionType, title) {
     const response = await fetch("/api/web-database/sections", {
       method: "DELETE",
       headers: {
@@ -85,6 +86,7 @@ export async function deleteSection(technologyName, title) {
       body: JSON.stringify({
         title: title,
         technologyName: technologyName,
+        sectionType: sectionType
       }),
     });
 
@@ -92,7 +94,7 @@ export async function deleteSection(technologyName, title) {
     return data;
 }
 
-export async function updateSection(technologyName, sectionTitle, section) {
+export async function updateSection(technologyName, sectionType, sectionTitle, section) {
     const response = await fetch("/api/web-database/sections", {
       method: "PUT",
       headers: {
@@ -103,6 +105,7 @@ export async function updateSection(technologyName, sectionTitle, section) {
         title: sectionTitle,
         newTitle: section.title,
         position: section.position,
+        sectionType: sectionType
       }),
     });
 

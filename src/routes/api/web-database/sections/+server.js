@@ -1,21 +1,20 @@
 import {webDatabasePool} from "../../pool";
 
-// GET /api/special-words
 export async function GET({ url }) {
   const technology = url.searchParams.get('technology');
-  let params = [technology];
-
-  let query = `
+  const sectionType = url.searchParams.get('section-type');
+  console.log('D')
+  
+  const result = await webDatabasePool.query(`
     SELECT 
       s.title,
       s.position
     FROM sections s
     LEFT JOIN technologies t ON s.technology_id = t.id
-    WHERE t.name = $1
+    LEFT JOIN section_types st ON st.id = s.section_type_id
+    WHERE t.name = $1 AND st.value = $2
     ORDER BY s.position
-  `;
-  
-  const result = await webDatabasePool.query(query, params);
+  `, [technology, sectionType]);
 
   return new Response(JSON.stringify({
     success: true,
@@ -27,47 +26,64 @@ export async function GET({ url }) {
 }
 
 export async function POST({ request }) {
-  const { technologyName, title, position } = await request.json();
+  const { technologyName, sectionType, title, position } = await request.json();
     let insertRes;
     let finalPosition = Number(position);
 
     const maxPositionResult = await webDatabasePool.query(
       `SELECT MAX(position) as max_position 
-        FROM sections 
-        WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)`,
-      [technologyName]
+        FROM sections
+        WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
+          AND section_type_id = (SELECT id FROM section_types WHERE value = $2)
+      `,
+      [technologyName, sectionType]
     );
 
     const maxPosition = maxPositionResult.rows[0]?.max_position;
 
     if (maxPosition) {
-        if (Number(position) > maxPosition) {
-            finalPosition = maxPosition + 1;
-        }
+      if (Number(position) > maxPosition) {
+        finalPosition = maxPosition + 1;
+      }
     } else {
-        finalPosition = 1;
+      finalPosition = 1;
     }
 
     if (finalPosition < 1) {
       insertRes = await webDatabasePool.query(
-        `INSERT INTO sections (technology_id, title, position)
-         VALUES ((SELECT id FROM technologies WHERE name = $1), $2, (SELECT COUNT(*) FROM sections s LEFT JOIN technologies t ON s.technology_id = t.id WHERE t.name = $1) + 1)
-         RETURNING *`,
-        [technologyName, title]
-      );
+        `INSERT INTO sections (technology_id, section_type_id, title, position)
+        VALUES (
+          (SELECT id FROM technologies WHERE name = $1), 
+          (SELECT id FROM section_types WHERE value = $2), 
+          $3, 
+          $4 + 1
+        )
+        RETURNING *`,
+        [technologyName, sectionType, title, maxPosition]
+        );
     } else {
       await webDatabasePool.query(
         `UPDATE sections
-         SET position = position + 1
-         WHERE technology_id = (SELECT id FROM technologies WHERE name = $1) AND position >= $2`,
-        [technologyName, finalPosition]
+          SET position = position + 1
+          WHERE technology_id = (SELECT id FROM technologies WHERE name = $1) 
+          AND section_type_id = (SELECT id FROM section_types WHERE value = $2)
+          AND position >= $3
+
+        `,
+        [technologyName, sectionType, finalPosition]
       );
 
       insertRes = await webDatabasePool.query(
-        `INSERT INTO sections (technology_id, title, position)
-         VALUES ((SELECT id FROM technologies WHERE name = $1), $2, $3)
-         RETURNING *`,
-        [technologyName, title, finalPosition]
+        `INSERT INTO sections (technology_id, section_type_id, title, position)
+          VALUES (
+            (SELECT id FROM technologies WHERE name = $1), 
+            (SELECT id FROM section_types WHERE value = $2), 
+            $3, 
+            $4
+          )
+          RETURNING *
+        `,
+        [technologyName, sectionType, title, finalPosition]
       );
     }
 
@@ -78,31 +94,37 @@ export async function POST({ request }) {
 }
 
 export async function DELETE({ request }) {
-  const { technologyName, title } = await request.json();
+  const { technologyName, sectionType, title } = await request.json();
 
   const curPositionResult = await webDatabasePool.query(`
     SELECT position as cur_position
       FROM sections 
-      WHERE title = $2
-      AND technology_id = (SELECT id FROM technologies WHERE name = $1);`,
-    [technologyName, title]
+      WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
+        AND section_type_id = (SELECT id FROM section_types WHERE value = $2)
+        AND title = $3
+      ;`,
+    [technologyName, sectionType, title]
   );
 
   const curPosition = curPositionResult.rows[0]?.cur_position;
 
   const result = await webDatabasePool.query(`
     DELETE FROM sections
-        WHERE title = $2
-        AND technology_id = (SELECT id FROM technologies WHERE name = $1)
-        RETURNING *;`, 
-    [technologyName, title]
+        WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
+          AND section_type_id = (SELECT id FROM section_types WHERE value = $2)
+          AND title = $3
+          RETURNING *;`, 
+    [technologyName, sectionType, title]
   );
 
   await webDatabasePool.query(
     `UPDATE sections
       SET position = position - 1
-      WHERE technology_id = (SELECT id FROM technologies WHERE name = $1) AND position > $2`,
-    [technologyName, curPosition]
+      WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
+        AND section_type_id = (SELECT id FROM section_types WHERE value = $2)
+        AND title = $3
+    `,
+    [technologyName, sectionType, curPosition]
   );
 
     return new Response(JSON.stringify({
@@ -112,15 +134,17 @@ export async function DELETE({ request }) {
 }
 
 export async function PUT({ request }) {
-  const { technologyName, title, newTitle, position } = await request.json();
+  const { technologyName, sectionType, title, newTitle, position } = await request.json();
 
   // Если нужно обновить позицию, сдвигаем остальные записи
   // Получаем текущую позицию обновляемого раздела
   const currentRes = await webDatabasePool.query(
     `SELECT position FROM sections
-      WHERE title = $1
-        AND technology_id = (SELECT id FROM technologies WHERE name = $2)`,
-    [title, technologyName]
+      WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
+        AND section_type_id = (SELECT id FROM section_types WHERE value = $2)
+        AND title = $3
+    `,
+    [technologyName, sectionType, title]
   );
 
   const curPosition = currentRes.rows[0].position;
@@ -130,25 +154,27 @@ export async function PUT({ request }) {
     `UPDATE sections
       SET position = position + 1
       WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
+        AND section_type_id = (SELECT id FROM section_types WHERE value = $2)
         AND (
-          (position > $2 AND $3 < $2) OR  -- если двигаем вниз
-          (position >= $2 AND $3 > $2)     -- если двигаем вверх
+          (position > $3 AND $4 < $3) OR  -- если двигаем вниз
+          (position >= $3 AND $4 > $3)     -- если двигаем вверх
         )
     `,
-    [technologyName, position, curPosition]
+    [technologyName, sectionType, position, curPosition]
   );
 
   // Обновляем наш section, включая позицию
   const updateRes = await webDatabasePool.query(
     `UPDATE sections
       SET position = CASE 
-        WHEN $5 < $2::integer THEN $2::integer + 1  -- если двигаем вниз
-        WHEN $5 >= $2::integer THEN $2 -- если двигаем вверх
+        WHEN $6 < $3::integer THEN $3::integer + 1  -- если двигаем вниз
+        WHEN $6 >= $3::integer THEN $3 -- если двигаем вверх
       END,
-      title = $4
+      title = $5
       WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
-        AND title = $3`,
-    [technologyName, position, title, newTitle, curPosition]
+        AND section_type_id = (SELECT id FROM section_types WHERE value = $2)
+        AND title = $4`,
+    [technologyName, sectionType, position, title, newTitle, curPosition]
   );
 
   // Возвращаем сдвинутые позиции на место
@@ -156,11 +182,12 @@ export async function PUT({ request }) {
     UPDATE sections
       SET position = position - 1
       WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
-         AND (
-          (position >= $3 AND $3 < $2::integer) OR  -- если двигаем вниз
-          (position > $3::integer AND $3 > $2::integer)     -- если двигаем вверх
+        AND section_type_id = (SELECT id FROM section_types WHERE value = $2)
+        AND (
+          (position >= $4 AND $4 < $3::integer) OR  -- если двигаем вниз
+          (position > $4::integer AND $4 > $3::integer)     -- если двигаем вверх
         )`,
-    [technologyName, position, curPosition]
+    [technologyName, sectionType, position, curPosition]
   );
 
   return new Response(JSON.stringify({

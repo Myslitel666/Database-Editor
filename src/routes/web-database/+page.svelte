@@ -36,7 +36,7 @@
   let sectionType = "Chapter";
 
   async function getSections() {
-    sections = await fetch.getSections(selectedTecnology);
+    sections = await fetch.getSections(selectedTecnology, sectionType);
   }
 
   async function getTechnologies() {
@@ -48,19 +48,21 @@
   }
 
   function handleAddingSection() {
-    section.title = clearUselessSpaces(section.title);
-    selectedTecnology = clearUselessSpaces(selectedTecnology);
+    if (sectionType && section.title && selectedTecnology) {
+      section.title = clearUselessSpaces(section.title);
+      selectedTecnology = clearUselessSpaces(selectedTecnology);
+      sectionType = clearUselessSpaces(sectionType);
 
-    if (section.title && selectedTecnology) {
       if (sections.map((s) => s.title).includes(section.title)) {
         showMessage(true, "Such the section is already in this summary");
       } else {
         const sectionCopy = { ...section };
         const selectedTecnologyCopy = selectedTecnology;
+        const sectionTypeCopy = sectionType;
         toggleSectionForm();
         showMessage(false, "The section added successfully");
         fetch
-          .createSection(selectedTecnologyCopy, sectionCopy)
+          .createSection(selectedTecnologyCopy, sectionTypeCopy, sectionCopy)
           .then(() => getSections());
       }
     } else {
@@ -69,16 +71,18 @@
   }
 
   function handleUpdatingSection() {
-    section.title = clearUselessSpaces(section.title);
-    updateSectionTitle = clearUselessSpaces(updateSectionTitle);
-    selectedTecnology = clearUselessSpaces(selectedTecnology);
-
     if (
+      selectedTecnology &&
+      sectionType &&
       section.title &&
       section.position &&
-      updateSectionTitle &&
-      selectedTecnology
+      updateSectionTitle
     ) {
+      section.title = clearUselessSpaces(section.title);
+      updateSectionTitle = clearUselessSpaces(updateSectionTitle);
+      selectedTecnology = clearUselessSpaces(selectedTecnology);
+      sectionType = clearUselessSpaces(sectionType);
+
       if (sections.map((s) => s.title).includes(updateSectionTitle)) {
         if (
           sections.map((s) => s.title).includes(section.title) &&
@@ -89,11 +93,17 @@
           const sectionCopy = { ...section };
           const sectionTitleCopy = updateSectionTitle;
           const technologyCopy = selectedTecnology;
+          const sectionTypeCopy = sectionType;
           toggleSectionForm();
           showMessage(false, "The section updated successfully");
 
           fetch
-            .updateSection(technologyCopy, sectionTitleCopy, sectionCopy)
+            .updateSection(
+              technologyCopy,
+              sectionTypeCopy,
+              sectionTitleCopy,
+              sectionCopy
+            )
             .then(() => getSections());
         }
       } else {
@@ -105,17 +115,19 @@
   }
 
   function handleDeletingSection() {
-    updateSectionTitle = clearUselessSpaces(updateSectionTitle);
-    selectedTecnology = clearUselessSpaces(selectedTecnology);
+    if (selectedTecnology && sectionType && updateSectionTitle) {
+      updateSectionTitle = clearUselessSpaces(updateSectionTitle);
+      selectedTecnology = clearUselessSpaces(selectedTecnology);
+      sectionType = clearUselessSpaces(sectionType);
 
-    if (updateSectionTitle && selectedTecnology) {
       if (sections.map((s) => s.title).includes(updateSectionTitle)) {
         const sectionTitleCopy = updateSectionTitle;
         const technologyCopy = selectedTecnology;
+        const sectionTypeCopy = sectionType;
         toggleSectionForm();
         showMessage(false, "The section deleted successfully");
         fetch
-          .deleteSection(technologyCopy, sectionTitleCopy)
+          .deleteSection(technologyCopy, sectionTypeCopy, sectionTitleCopy)
           .then(() => getSections());
       } else {
         showMessage(true, "The section you are deleting is missing");
@@ -176,7 +188,7 @@
     toggleSectionForm();
   }
 
-  $: if (selectedTecnology) {
+  $: if (selectedTecnology && sectionType) {
     getSections();
     toggleSectionForm();
   }
@@ -420,7 +432,7 @@
   <Button
     marginTop="7px"
     marginBottom="7px"
-    width="370px"
+    width="440px"
     onclick={downloadBackup}>Download</Button
   >
 </div>
