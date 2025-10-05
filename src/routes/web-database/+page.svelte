@@ -82,7 +82,7 @@
           sections.map((s) => s.title).includes(section.title) &&
           updateSectionTitle !== section.title
         ) {
-          showMessage(true, "Such the section is already in this dictionary");
+          showMessage(true, "Such the section is already in this summary");
         } else {
           const sectionCopy = { ...section };
           const sectionTitleCopy = updateSectionTitle;

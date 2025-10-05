@@ -130,14 +130,14 @@ export async function PUT({ request }) {
     `UPDATE sections
       SET position = position + 1
       WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
-        AND position >= $2`,
+        AND position > $2`,
     [technologyName, position]
   );
 
   // Обновляем наш section, включая позицию
   const updateRes = await webDatabasePool.query(
     `UPDATE sections
-      SET position = $2,
+      SET position = $2 + 1,
       title = $4
       WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
         AND title = $3`,
