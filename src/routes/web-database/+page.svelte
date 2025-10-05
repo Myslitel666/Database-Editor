@@ -32,6 +32,8 @@
   let subjectAction = "Create";
   let technologies;
   let sections;
+  let sectionTypes;
+  let sectionType = "Chapter";
 
   async function getSections() {
     sections = await fetch.getSections(selectedTecnology);
@@ -213,12 +215,9 @@
   }
 
   onMount(async () => {
-    //const test = await fetch.getDatabase();
-    //console.log(test);
-
     technologies = await fetch.getTechnologies();
-    //subjectWord = subjects.includes("React") ? "React" : subjects[0];
-    //specialWords = await fetch.getSpecialWords(subjectWord);
+    const sectionTypesJSON = await fetch.getSectionTypes();
+    sectionTypes = sectionTypesJSON.map((s) => s.value);
   });
 </script>
 
@@ -237,10 +236,16 @@
         width="111px"
       />
       <AutoComplete
+        options={sectionTypes ? sectionTypes : []}
+        bind:value={sectionType}
+        label="Type"
+        width="120px"
+      />
+      <AutoComplete
         options={technologies ? technologies.map((t) => t.name) : []}
         bind:value={selectedTecnology}
         label="Tecnology"
-        width="252px"
+        width="195px"
       />
     </div>
     {#if sectionAction !== "Create"}
@@ -248,17 +253,17 @@
         bind:value={updateSectionTitle}
         options={sections ? sections.map((t) => t.title) : []}
         label="Editing Section"
-        width="370px"
+        width="440px"
       />
     {/if}
     {#if sectionAction !== "Delete"}
-      <TextField bind:value={section.title} label="Section" width="370px" />
-      <TextField bind:value={section.position} label="Position" width="370px" />
+      <TextField bind:value={section.title} label="Section" width="440px" />
+      <TextField bind:value={section.position} label="Position" width="440px" />
     {/if}
     {#if sectionAction === "Create"}
-      <Button width="370px" onClick={handleAddingSection}>ADD SECTION</Button>
+      <Button width="440px" onClick={handleAddingSection}>ADD SECTION</Button>
     {:else if sectionAction === "Update"}
-      <Button width="370px" onClick={handleUpdatingSection}
+      <Button width="440px" onClick={handleUpdatingSection}
         >UPDATE SECTION</Button
       >
     {:else}
@@ -267,7 +272,7 @@
         borderColor="red"
         color="red"
         bgColorHover="rgba(255,0,0,0.12)"
-        width="370px"
+        width="440px"
         onClick={handleDeletingSection}
       >
         DELETE SECTION
@@ -287,34 +292,34 @@
     options={["Create", "Update", "Delete"]}
     bind:value={subjectAction}
     label="Action"
-    width="370px"
+    width="440px"
   />
   {#if subjectAction !== "Create"}
     <AutoComplete
       bind:value={updateTechnology}
       label="Editing Name"
-      width="370px"
+      width="440px"
       options={technologies ? technologies.map((t) => t.name) : []}
     />
   {/if}
   {#if subjectAction !== "Delete"}
-    <TextField bind:value={technology.name} label="Name" width="370px" />
+    <TextField bind:value={technology.name} label="Name" width="440px" />
     <TextField
       bind:value={technology.description}
       label="Description"
-      width="370px"
+      width="440px"
     />
-    <TextField bind:value={technology.logo} label="Logo" width="370px" />
+    <TextField bind:value={technology.logo} label="Logo" width="440px" />
     <TextField
       bind:value={technology.data_source}
       label="Data Source"
-      width="370px"
+      width="440px"
     />
   {/if}
   {#if subjectAction === "Create"}
     <Button
       marginBottom="7px"
-      width="370px"
+      width="440px"
       onClick={() => {
         //technology = clearUselessSpaces(technology.name);
 
@@ -346,7 +351,7 @@
   {:else if subjectAction === "Update"}
     <Button
       marginBottom="7px"
-      width="370px"
+      width="440px"
       onClick={() => {
         updateTechnology = clearUselessSpaces(updateTechnology);
         technology.name = clearUselessSpaces(technology.name);
@@ -388,7 +393,7 @@
       borderColor="red"
       color="red"
       bgColorHover="rgba(255,0,0,0.12)"
-      width="370px"
+      width="440px"
       onClick={() => {
         updateTechnology = clearUselessSpaces(updateTechnology);
 

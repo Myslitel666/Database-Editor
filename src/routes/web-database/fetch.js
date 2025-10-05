@@ -29,6 +29,18 @@ export async function getSections(technologyName) {
     return data.sections;
 }
 
+export async function getSectionTypes() {
+    const response = await fetch(`/api/web-database/section-types`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+
+    const data = await response.json();
+    return data.section_types;
+}
+
 export async function createTechnology(technology) {
     const response = await fetch("/api/web-database/technologies", {
       method: "POST",
