@@ -138,7 +138,7 @@ export async function PUT({ request }) {
   const updateRes = await webDatabasePool.query(
     `UPDATE sections
       SET position = $2,
-      title = newTitle
+      title = $4
       WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
         AND title = $3`,
     [technologyName, position, title, newTitle]
@@ -149,8 +149,8 @@ export async function PUT({ request }) {
     `UPDATE sections
       SET position = position - 1
       WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
-        AND position > $1`,
-    [currentPosition]
+        AND position > $2`,
+    [technologyName, currentPosition]
   );
 
   return new Response(JSON.stringify({

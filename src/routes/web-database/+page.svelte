@@ -47,10 +47,11 @@
 
   function handleAddingSection() {
     section.title = clearUselessSpaces(section.title);
+    selectedTecnology = clearUselessSpaces(selectedTecnology);
 
     if (section.title && selectedTecnology) {
       if (sections.map((s) => s.title).includes(section.title)) {
-        showMessage(true, "Such the section is already in this dictionary");
+        showMessage(true, "Such the section is already in this summary");
       } else {
         const sectionCopy = { ...section };
         const selectedTecnologyCopy = selectedTecnology;
@@ -66,49 +67,39 @@
   }
 
   function handleUpdatingSection() {
-    section.value = clearUselessSpaces(section.value);
-    section.translate = clearUselessSpaces(section.translate);
-    section.level = clearUselessSpaces(section.level);
-    section.example_use = clearUselessSpaces(section.example_use);
+    section.title = clearUselessSpaces(section.title);
     updateSectionTitle = clearUselessSpaces(updateSectionTitle);
     selectedTecnology = clearUselessSpaces(selectedTecnology);
 
-    // if (
-    //   specialWord.value &&
-    //   specialWord.translate &&
-    //   updateValue &&
-    //   subjectWord
-    // ) {
-    //   if (specialWords.map((s) => s.value).includes(updateValue)) {
-    //     if (
-    //       specialWords.map((s) => s.value).includes(specialWord.value) &&
-    //       updateValue !== specialWord.value
-    //     ) {
-    //       showMessage(
-    //         true,
-    //         "Such the Special Word is already in this dictionary"
-    //       );
-    //     } else {
-    //       const specialWordCopy = { ...specialWord };
-    //       const updateValueCopy = updateValue;
-    //       const subjectWordCopy = subjectWord;
-    //       toggleWordForm();
-    //       showMessage(false, "The special word updated successfully");
+    if (
+      section.title &&
+      section.position &&
+      updateSectionTitle &&
+      selectedTecnology
+    ) {
+      if (sections.map((s) => s.title).includes(updateSectionTitle)) {
+        if (
+          sections.map((s) => s.title).includes(section.title) &&
+          updateSectionTitle !== section.title
+        ) {
+          showMessage(true, "Such the section is already in this dictionary");
+        } else {
+          const sectionCopy = { ...section };
+          const sectionTitleCopy = updateSectionTitle;
+          const technologyCopy = selectedTecnology;
+          toggleSectionForm();
+          showMessage(false, "The section updated successfully");
 
-    //       // fetch
-    //       //   .updateSpecialWord(
-    //       //     specialWordCopy,
-    //       //     updateValueCopy,
-    //       //     subjectWordCopy
-    //       //   )
-    //       //   .then(() => getSpecialWords());
-    //     }
-    //   } else {
-    //     showMessage(true, "The Special Word you are editing is missing");
-    //   }
-    // } else {
-    //   showMessage(true, "Fill in all the fields");
-    // }
+          fetch
+            .updateSection(technologyCopy, sectionTitleCopy, sectionCopy)
+            .then(() => getSections());
+        }
+      } else {
+        showMessage(true, "The section you are editing is missing");
+      }
+    } else {
+      showMessage(true, "Fill in all the fields");
+    }
   }
 
   function handleDeletingSection() {
@@ -150,7 +141,7 @@
     updateSectionTitle = "";
   }
 
-  function toggleSubjectForm() {
+  function toggleTechnologyForm() {
     technology = {
       name: "",
       description: "",
@@ -179,20 +170,6 @@
     }, 2750);
   }
 
-  function rusToEng(word, e) {
-    const symbol = e.data;
-    const errorSymbols = "йцукенгшщзфывапролдячсмить";
-    const rightSymbols = "qwertyuiopasdfghjklzxcvbnm";
-
-    const index = errorSymbols.indexOf(symbol); // <- индекс символа
-
-    if (index !== -1) {
-      word = word.slice(0, -1) + rightSymbols[index];
-    }
-
-    return word;
-  }
-
   $: if (sectionAction) {
     toggleSectionForm();
   }
@@ -210,7 +187,8 @@
   }
 
   $: if (updateSectionTitle) {
-    section = sections.find((s) => s.title === updateSectionTitle);
+    //Создаём копию объекта, чтобы не редачить section, как элемент списка sections
+    section = { ...sections.find((s) => s.title === updateSectionTitle) };
   }
 
   function clearUselessSpaces(str) {
@@ -351,7 +329,7 @@
             );
           } else {
             const technologyCopy = technology;
-            toggleSubjectForm();
+            toggleTechnologyForm();
             showMessage(false, "The technology added successfully");
 
             fetch
@@ -386,7 +364,7 @@
             } else {
               const updateTechnologyCopy = updateTechnology;
               const technologyCopy = technology;
-              toggleSubjectForm();
+              toggleTechnologyForm();
               showMessage(false, "The technology updated successfully");
 
               fetch
@@ -417,7 +395,7 @@
         if (updateTechnology) {
           if (technologies.map((t) => t.name).includes(updateTechnology)) {
             const updateTechnologyCopy = updateTechnology;
-            toggleSubjectForm();
+            toggleTechnologyForm();
             showMessage(false, "The technology deleted successfully");
             fetch
               .deleteTechnology(updateTechnologyCopy)
