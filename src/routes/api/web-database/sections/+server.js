@@ -123,34 +123,45 @@ export async function PUT({ request }) {
     [title, technologyName]
   );
 
-  const currentPosition = currentRes.rows[0].position;
+  const curPosition = currentRes.rows[0].position;
 
-  // Сдвигаем позиции вниз, начиная с position (чтобы выделить для него место)
+  // Сдвигаем позиции, чтобы выделить место для вставки на одну из занятых
   await webDatabasePool.query(
     `UPDATE sections
       SET position = position + 1
       WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
-        AND position > $2`,
-    [technologyName, position]
+        AND (
+          (position > $2 AND $3 < $2) OR  -- если двигаем вниз
+          (position >= $2 AND $3 > $2)     -- если двигаем вверх
+        )
+    `,
+    [technologyName, position, curPosition]
   );
 
   // Обновляем наш section, включая позицию
   const updateRes = await webDatabasePool.query(
     `UPDATE sections
-      SET position = $2 + 1,
+      SET position = CASE 
+        WHEN $5 < $2::integer THEN $2::integer + 1  -- если двигаем вниз
+        WHEN $5 >= $2::integer THEN $2 -- если двигаем вверх
+      END,
       title = $4
       WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
         AND title = $3`,
-    [technologyName, position, title, newTitle]
+    [technologyName, position, title, newTitle, curPosition]
   );
 
-  // Поднимаем позиции обратно вверх, начиная с обновлённой
-  await webDatabasePool.query(
-    `UPDATE sections
+  // Возвращаем сдвинутые позиции на место
+  await webDatabasePool.query(`
+    UPDATE sections
       SET position = position - 1
       WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)
-        AND position > $2`,
-    [technologyName, currentPosition]
+         AND (
+          (position >= $3 AND $3 < $2::integer) OR  -- если двигаем вниз
+          (position > $2::integer AND $3 > $2::integer)     -- если двигаем вверх
+        )
+        AND position >= $3`,
+    [technologyName, position, curPosition]
   );
 
   return new Response(JSON.stringify({
