@@ -116,17 +116,17 @@
     selectedTecnology = clearUselessSpaces(selectedTecnology);
 
     if (updateSectionTitle && selectedTecnology) {
-      // if (specialWords.map((s) => s.value).includes(updateValue)) {
-      //   const updateValueCopy = updateValue;
-      //   const subjectWordCopy = subjectWord;
-      //   toggleWordForm();
-      //   showMessage(false, "The special word deleted successfully");
-      //   // fetch
-      //   //   .deleteSpecialWord(updateValueCopy, subjectWordCopy)
-      //   //   .then(() => getSpecialWords());
-      // } else {
-      //   showMessage(true, "The Special Word you are deleting is missing");
-      // }
+      if (sections.map((s) => s.title).includes(updateSectionTitle)) {
+        const sectionTitleCopy = updateSectionTitle;
+        const technologyCopy = selectedTecnology;
+        toggleSectionForm();
+        showMessage(false, "The section deleted successfully");
+        fetch
+          .deleteSection(technologyCopy, sectionTitleCopy)
+          .then(() => getSections());
+      } else {
+        showMessage(true, "The section you are deleting is missing");
+      }
     } else {
       showMessage(true, "Fill in all the fields");
     }
@@ -193,28 +193,12 @@
     return word;
   }
 
-  $: if (section.value) {
-    section.value = section.value.toLowerCase();
-  }
-
-  $: if (section.translate) {
-    section.translate = section.translate.toLowerCase();
-  }
-
-  $: if (section.level) {
-    section.level = section.level.toUpperCase();
-  }
-
-  $: if (subjectAction) {
-    toggleSubjectForm();
-  }
-
   $: if (sectionAction) {
     toggleSectionForm();
   }
 
   $: if (selectedTecnology) {
-    //getSpecialWords();
+    getSections();
     toggleSectionForm();
   }
 
@@ -223,6 +207,10 @@
       (s) => s.name === updateTechnology
     );
     if (upTechnologyObj) technology = { ...upTechnologyObj }; // данные с бэка
+  }
+
+  $: if (updateSectionTitle) {
+    section = sections.find((s) => s.title === updateSectionTitle);
   }
 
   function clearUselessSpaces(str) {
@@ -280,6 +268,7 @@
     {#if sectionAction !== "Create"}
       <AutoComplete
         bind:value={updateSectionTitle}
+        options={sections ? sections.map((t) => t.title) : []}
         label="Editing Section"
         width="370px"
       />

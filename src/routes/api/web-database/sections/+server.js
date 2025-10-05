@@ -33,8 +33,8 @@ export async function POST({ request }) {
 
     const maxPositionResult = await webDatabasePool.query(
       `SELECT MAX(position) as max_position 
-      FROM sections 
-      WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)`,
+        FROM sections 
+        WHERE technology_id = (SELECT id FROM technologies WHERE name = $1)`,
       [technologyName]
     );
 
@@ -80,12 +80,29 @@ export async function POST({ request }) {
 export async function DELETE({ request }) {
   const { technologyName, title } = await request.json();
 
+  const curPositionResult = await webDatabasePool.query(`
+    SELECT position as cur_position
+      FROM sections 
+      WHERE title = $2
+      AND technology_id = (SELECT id FROM technologies WHERE name = $1);`,
+    [technologyName, title]
+  );
+
+  const curPosition = curPositionResult.rows[0]?.cur_position;
+
   const result = await webDatabasePool.query(`
     DELETE FROM sections
         WHERE title = $2
         AND technology_id = (SELECT id FROM technologies WHERE name = $1)
         RETURNING *;`, 
     [technologyName, title]
+  );
+
+  await webDatabasePool.query(
+    `UPDATE sections
+      SET position = position - 1
+      WHERE technology_id = (SELECT id FROM technologies WHERE name = $1) AND position > $2`,
+    [technologyName, curPosition]
   );
 
     return new Response(JSON.stringify({

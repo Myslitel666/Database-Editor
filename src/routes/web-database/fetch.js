@@ -26,7 +26,6 @@ export async function getSections(technologyName) {
     });
 
     const data = await response.json();
-    console.log(data)
     return data.sections;
 }
 
